@@ -1,4 +1,7 @@
 import React from 'react';
+//
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
 //antd
 import Breadcrumb from 'antd/lib/breadcrumb';
 import Layout from 'antd/lib/layout';
@@ -53,5 +56,14 @@ class AdminLayout extends React.Component {
   }
 }
 
+const GET_USER_DATA = gql`
+  query getCurrentUser {
+    user {
+      emails { address, verified },
+      randomString,
+      _id
+    }
+  }
+`;
 
-export { AdminLayout };
+export default graphql(GET_USER_DATA)(AdminLayout)

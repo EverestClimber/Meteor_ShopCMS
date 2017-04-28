@@ -12,19 +12,20 @@ import Select from 'antd/lib/select';
 import message from 'antd/lib/message';
 import { withApollo } from 'react-apollo';
 import { handleLogin } from '../../../../modules/helpers'
-import LoginForm from './LoginForm';
 
-
-class LoginPage extends React.Component {
+class LoginForm extends React.Component {
+	onSubmit = () => {
+		let email = "admin@admin.com";
+		let password = "password";
+		handleLogin(email, password, this.props)
+	}
 	render(){
 		return (
-			<Row type='flex' justify='center' align='middle' style={{height: '55vh'}}>
-				<Card>
-					{this.props.data && !this.props.data.user && <LoginForm />}
-				</Card>
-			</Row>
+			<div>
+				<Button type='primary' onClick={this.onSubmit}>LOGIN</Button>
+			</div>
 		);
 	}
 }
 
-export { LoginPage };
+export default withApollo(LoginForm);

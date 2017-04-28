@@ -1,59 +1,8 @@
 @import '{}/node_modules/antd/dist/antd.less';
 
 
-@font-face {
-    font-family: 'ProximaNovaSoft_Bold';
-    //src: url('/fonts/proximanovasoft-bold.woff') format('woff');
-    src: url('/fonts/proximanovasoft-bold.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-}
 
-.nav-text {
-  transition: all .3s;
-}
 
-.side-tag {
-  margin-top: 10px;
-  cursor: pointer;
-  display: inline;
-  border: 2px solid transparent;
-}
-
-.active-side-tag {
-  h3 {
-    color: #666;
-    font-family: 'ProximaNovaSoft_Bold';
-    border: 2px solid #efefef;
-  }
-}
-
-.imageCol {
-  width: 25px;
-}
-
-.deleteBtnCol {
-  width: 45px;
-}
-
-@font-face {
-    font-family: 'ProximaNovaSoft_Medium';
-    src: url('/fonts/proximanovasoft-medium.woff') format('woff');
-    font-weight: 600;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'ProximaNovaSoft_Regular';
-    src: url('/fonts/proximanovasoft-regular.woff') format('woff');
-}
-
-.result-card-text {
-  color: lighten(#7b8b8e, 15%);
-  line-height: 1.2;
-  font-family: 'ProximaNovaSoft_Regular';
-  font-size: 13px;;
-}
 
 html, body {
   //background: #FAFAFA !important;
@@ -76,7 +25,7 @@ body {
 
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'ProximaNovaSoft_Regular';
+  font-family: 'OpenSans';
   -webkit-font-smoothing: antialiased;
   -webkit-margin-after: 0px;
   -webkit-margin-before: 10px;
@@ -86,7 +35,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 span, p, a  {
-  font-family: 'ProximaNovaSoft_Regular';
+  font-family: 'OpenSans';
 }
 
 
@@ -123,7 +72,7 @@ span, p, a  {
 // ------ Base & Require ------
 @body-background        : #fff;
 @component-background   : #fff;
-@font-family            : 'ProximaNovaSoft_Regular', BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+@font-family            : 'OpenSans', BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
 @code-family            : Consolas, Menlo, Courier, monospace;
 @text-color             : #666;
 @heading-color          : #404040;
@@ -314,6 +263,37 @@ span, p, a  {
 @popover-arrow-outer-width: (@popover-arrow-width + 1);
 //** Popover outer arrow color
 @popover-arrow-outer-color: fadeout(@border-color-base, 30%);
+
+
+
+
+.nav-text {
+  transition: all .3s;
+}
+
+.side-tag {
+  margin-top: 10px;
+  cursor: pointer;
+  display: inline;
+  border: 2px solid transparent;
+}
+
+.active-side-tag {
+  h3 {
+    color: #666;
+    font-family: 'ProximaNovaSoft_Bold';
+    border: 2px solid #efefef;
+  }
+}
+
+.imageCol {
+  width: 25px;
+}
+
+.deleteBtnCol {
+  width: 45px;
+}
+
 
 
 .result-card {
@@ -954,20 +934,6 @@ a {
   }
 }
 
-.documents-list {
-
-
-  .documents-list-leave {
-    -webkit-animation-name: bounceOut;
-    -webkit-animation-duration: 0.5s;
-    -webkit-animation-iteration-count: 1;
-    -webkit-animation-timing-function: linear;
-    animation-name: bounceOut;
-    animation-duration: 0.5s;
-    animation-iteration-count: 1;
-    animation-timing-function: linear;
-  }
-}
 
 
 .master-root {
@@ -1002,53 +968,6 @@ a {
   box-shadow: none;
 }
 
-.alert {
-  width: 45%;
-  min-height: 10%;
-  position: absolute;
-  z-index: 9999;
-  opacity: 0;
-  transition: opacity .5s;
-  color: white;
-  vertical-align: middle;
-  line-height: 3rem;
-}
-
-.alert-visible {
-  opacity: 1;
-}
-
-.alert-right {
-  top: 0;
-  right: 0;
-  background: green;
-  border-top-left-radius: 50px;
-  border-bottom-left-radius: 50px;
-}
-
-.alert-left {
-  top: 0;
-  left: 0;
-  background: red;
-  border-top-right-radius: 50px;
-  border-bottom-right-radius: 50px;
-}
-
-.alert-top {
-  background: purple;
-  border-radius: 50px;
-  transform: translate(-50%, 0);
-  margin-left: 50%;
- }
-
- .alert-bottom {
-  bottom: 0;
-  background: blue;
-  border-top-left-radius: 50px;
-  border-radius: 50px;
-  transform: translate(-50%, 0);
-  margin-left: 50%;
- }
 
 
 

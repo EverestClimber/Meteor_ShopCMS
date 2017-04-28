@@ -1,4 +1,10 @@
 import React from 'react';
+import { browserHistory } from 'react-router'
+//
+import { graphql, withApollo } from 'react-apollo';
+import gql from 'graphql-tag';
+//modules
+import { handleLogout } from '../../../modules/helpers';
 //antd
 import Breadcrumb from 'antd/lib/breadcrumb';
 import Layout from 'antd/lib/layout';
@@ -28,7 +34,6 @@ class PublicLayout extends React.Component {
       this.setState({width: window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth });
   }
   componentDidMount() {
-    
     window.addEventListener("resize", this.updateDimensions);
   }
   componentWillUnmount() {
@@ -37,11 +42,32 @@ class PublicLayout extends React.Component {
   componentWillMount(){
 
   }
+  handleClick = (e) => {
+    if (e.key === 'logout') { 
+      message.loading('logging you out...', 3);
+      return handleLogout(this.props);
+    }
+    browserHistory.push(e.key);
+    return this.setState({ current: e.key });
+  }
   render(){
-   
+    
     return (
 	    <Layout>
-	      <Content style={{ padding: 0 }}>
+        <Header className="header">
+          <Menu 
+            defaultSelectedKeys={[this.props.location.pathname]} 
+            onClick={this.handleClick} 
+            mode="horizontal" 
+            style={{ lineHeight: '64px' }}
+          >
+            <Menu.Item key="/">Home</Menu.Item>
+            {!this.props.data || !this.props.data.user && <Menu.Item key="/login">Login</Menu.Item>}
+            {!this.props.data || !this.props.data.user && <Menu.Item key="/signup">Signup</Menu.Item>}
+            {this.props.data && this.props.data.user && <Menu.Item key="logout">Logout</Menu.Item>}
+          </Menu>
+        </Header>
+	      <Content style={{ padding: 0, minHeight: 'calc(100vh - 64px)' }}>
 	          {React.cloneElement(this.props.children, {...this.props})}
 	      </Content>
 	      <Footer>
@@ -51,6 +77,15 @@ class PublicLayout extends React.Component {
   }
 }
 
+const GET_USER_DATA = gql`
+  query getCurrentUser {
+    user {
+      emails { address, verified },
+      randomString,
+      _id
+    }
+  }
+`;
 
 
-export { PublicLayout };
+export default withApollo(graphql(GET_USER_DATA)(PublicLayout))

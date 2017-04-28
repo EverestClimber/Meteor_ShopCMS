@@ -2,7 +2,9 @@
 import React from 'react';
 import { Router, Route, IndexRoute, browserHistory } from 'react-router';
 // LAYOUTS
-import { PublicLayout, AdminLayout } from '../../ui/layouts';
+import PublicLayout from '../../ui/layouts/public';
+import AdminLayout from '../../ui/layouts/admin';
+
 // PAGES
 import { LandingPage, LoginPage, SignupPage } from '../../ui/pages';
 // THEME
