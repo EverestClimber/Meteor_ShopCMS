@@ -1,36 +1,18 @@
 import { Random } from 'meteor/random';
+import { UserResolvers, UserSchema } from './User';
+import { DocumentResolvers, DocumentSchema } from './Document';
+import { merge } from 'lodash';
+
 
 export const typeDefs = [
-  `
-type Email {
-  address: String
-  verified: Boolean
-}
-
-type User {
-  emails: [Email]
-  randomString: String
-  _id: String
-}
-
-type Query {
-  user: User
-}
-`,
+	...UserSchema, 
+	...DocumentSchema
 ];
 
-export const resolvers = {
-  Query: {
-    user(root, args, context) {
-      /*
-       * We access to the current user here thanks to the context. The current
-       * user is added to the context thanks to the `meteor/apollo` package.
-       */
-      return context.user;
-    },
-  },
-  User: {
-    emails: ({ emails }) => emails,
-    randomString: () => Random.id(),
-  },
-};
+
+export const resolvers = merge(
+	UserResolvers, 
+	DocumentResolvers
+);
+
+

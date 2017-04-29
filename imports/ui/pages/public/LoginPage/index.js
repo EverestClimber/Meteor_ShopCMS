@@ -17,6 +17,7 @@ import LoginForm from './LoginForm';
 
 class LoginPage extends React.Component {
 	render(){
+		console.log(this.props.data && this.props.data)
 		return (
 			<Row type='flex' justify='center' align='middle' style={{height: '55vh'}}>
 				<Card>
