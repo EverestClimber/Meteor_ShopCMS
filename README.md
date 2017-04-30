@@ -1,4 +1,4 @@
-# Meteor + Apollo boilerplate
+# SpaceBug (Meteor + Apollo + React + Antd boilerplate)
 
 A simple kit to start experimenting with Apollo, Meteor and React.
 
@@ -6,8 +6,11 @@ A simple kit to start experimenting with Apollo, Meteor and React.
 - GraphQL server running with Express bound to the Meteor app
 - Apollo client
 - React
-- Accounts UI, Basic & password
+- Antd [react components](https://ant.design/components/layout/)
+- Accounts UI, Basic & password (via [meteor-apollo-accounts](https://github.com/orionsoft/meteor-apollo-accounts))
 - ES6 syntax
+- Admin Role with Very Basic Admin Dashboard (e.g. table of users)
+- api folder setup similar to [TheMeteorChef's Base Repo](https://github.com/themeteorchef/base)
 
 Check `package.json` for specific versions
 
@@ -28,6 +31,7 @@ GraphiQL is enabled at [/graphiql](http://localhost:3000/graphiql).
     │   └── main.js             # Imports all required files - React render
     ├── imports                 # A client/server folder
     │   ├── api                 #
+    │   |  └── Document         # Schema & query definitions
     │   |  └── schema.js        # Schema & query definitions
     |   └── ui                  # UI React rendering
     │      └── App.js           # Component using `graphql` HOC
