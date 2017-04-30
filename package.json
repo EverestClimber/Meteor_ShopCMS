@@ -49,7 +49,7 @@
     "react-dom": "^15.4.2",
     "react-router": "^2.5.2",
     "redux": "^3.6.0",
-    "subscriptions-transport-ws": "^0.5.5-alpha.0",
+    "subscriptions-transport-ws": "^0.5.5",
     "tracker-component": "^1.3.21"
   },
   "devDependencies": {

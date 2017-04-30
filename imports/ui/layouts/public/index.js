@@ -61,12 +61,14 @@ class PublicLayout extends React.Component {
     
   }
   handleClick = (e) => {
+
     if (e.key === 'logout') { 
-      message.loading('logging you out...', 3);
-      return handleLogout(this.props);
+      return handleLogout(this.props, this);
+    } else {
+      browserHistory.push(e.key);
+      return this.setState({ current: e.key });
     }
-    browserHistory.push(e.key);
-    return this.setState({ current: e.key });
+    
   }
   render(){
 

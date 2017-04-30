@@ -2,14 +2,13 @@ import { browserHistory } from 'react-router';
 import { Meteor } from 'meteor/meteor';
 import message from 'antd/lib/message';
 import { Roles } from 'meteor/alanning:roles';
-import { loginWithPassword, logout, onTokenChange } from 'meteor-apollo-accounts'
+import { loginWithPassword, createUser, logout, onTokenChange } from 'meteor-apollo-accounts'
 
 
-const afterLogin = (userId, props) => {
+const afterLogin = (userId, apollo, _this) => {
   message.success('we in this bitch!'); 
-  props.client.resetStore();
-  console.log(userId);
-  console.log(Roles.userIsInRole(userId, ['admin']))
+  apollo.resetStore();
+  _this.setState({ loading: false });
 /*  if (Roles.userIsInRole(userId, ['admin'])) {
       return browserHistory.push('/admin');
   } else {
@@ -17,18 +16,39 @@ const afterLogin = (userId, props) => {
   }*/
 }
 
+const alertErrors = (res, _this) => {
+  const errors = res.graphQLErrors.map( err => err.message );
+  errors.forEach(messageText => {
+    message.error(messageText, 4);
+    let errors = _this.state.errors;
+    errors.push(messageText);
+    _this.setState({ errors });
+  });
+  _this.setState({ loading: false });
+}
 
 
-export const handleLogin = (email, password, props) => {
-  loginWithPassword({email, password}, props.client).then((userId) => afterLogin(userId, props));
+export const handleSignup = (email, password, profile, apollo, _this) => {
+  createUser({email, password, profile}, apollo)
+    .then(userId => afterLogin(userId, apollo, _this) )
+    .catch( res => alertErrors(res, _this) );
+};
+
+
+export const handleLogin = (email, password, apollo, _this) => {
+  loginWithPassword({email, password}, apollo)
+    .then( (userId) => afterLogin(userId, apollo, _this) )
+    .catch( res => alertErrors(res, _this) );
   //onTokenChange(({ userId, token }) => Meteor.loginWithToken(token, () => afterLogin(userId, props)));
 };
 
 
-export const handleLogout = (props) => {
+export const handleLogout = (props, _this) => {
       logout(props.client)
-        .then(()=> {
-          props.client.resetStore()
-          return browserHistory.push('/');
-        });
+        .then(()=> { 
+          props.client.resetStore();
+          message.success('you are logged out!', 3);
+          return browserHistory.push('/'); 
+        })
+        .catch( res => alertErrors(res, _this) );
 };

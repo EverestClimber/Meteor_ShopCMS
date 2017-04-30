@@ -13,16 +13,24 @@ import message from 'antd/lib/message';
 import { withApollo } from 'react-apollo';
 import { handleLogin } from '../../../../modules/helpers'
 import LoginForm from './LoginForm';
-
+//common
+import { AlreadyLoggedIn } from '../../../components/common'
 
 class LoginPage extends React.Component {
+	getContent = () => {
+		const { data, user} = this.props.data;
+
+		if (data && data.user) {
+			return <LoginForm /> 
+		} else {
+			return <AlreadyLoggedIn user={user} />
+		}
+
+	}
 	render(){
-		console.log(this.props.data && this.props.data)
 		return (
 			<Row type='flex' justify='center' align='middle' style={{height: '55vh'}}>
-				<Card>
-					{this.props.data && !this.props.data.user && <LoginForm />}
-				</Card>
+				{this.getContent()}
 			</Row>
 		);
 	}
