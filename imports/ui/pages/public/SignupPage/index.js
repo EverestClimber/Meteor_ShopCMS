@@ -19,12 +19,12 @@ import { AlreadyLoggedIn } from '../../../components/common'
 
 class SignupPage extends React.Component {
 	getContent = () => {
-		const { data, user} = this.props.data;
-
-		if (data && data.user) {
+		const { data } = this.props;
+		
+		if (!data || !data.user || data.user === null) {
 			return <SignupForm /> 
 		} else {
-			return <AlreadyLoggedIn user={user} />
+			return <AlreadyLoggedIn user={data.user} />
 		}
 
 	}

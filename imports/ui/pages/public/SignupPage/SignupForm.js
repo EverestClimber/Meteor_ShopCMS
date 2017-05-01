@@ -13,6 +13,9 @@ import InputNumber from 'antd/lib/input-number';
 import Select from 'antd/lib/select';
 import message from 'antd/lib/message';
 //
+//
+import ApolloClient from '../../../../startup/client/ApolloClient'
+//
 import { handleSignup } from '../../../../modules/helpers'
 import { FormErrorArea } from '../../../components/common'
 
@@ -23,17 +26,15 @@ class FormComponent extends React.Component {
 	constructor(props){
 		super(props);
 		this.state = { loading: false, errors: [] };
-		this.handleSubmit = this.handleSubmit.bind(this)
 	}
-	handleSubmit(e) {
+	handleSubmit = (e) => {
 	    e.preventDefault();
 	    let _this = this;
       _this.setState({ loading: true })
 	    _this.props.form.validateFields((err, { firstName, lastName, email, password }) => {
         if (err) { return _this.setState({ loading: false }) }
-        let name = { first: firstName, last: lastName }
-        let profile = { name }
-        handleSignup(email, password, profile, _this.props.client, _this)
+        let profile = { name: { first: firstName, last: lastName } }
+        handleSignup(email, password, profile, ApolloClient, _this)
 	    });
 
 	  }
@@ -82,6 +83,5 @@ class FormComponent extends React.Component {
   }
 }
 
-const SignupForm = Form.create()(FormComponent);
 
-export default withApollo(SignupForm);
+export default Form.create()(FormComponent);

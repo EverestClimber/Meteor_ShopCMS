@@ -1,0 +1,10 @@
+
+{
+	"galaxy.meteor.com": {
+	    "env": {
+	      "ROOT_URL": "https://spacebug.meteorapp.com",
+	      "MONGO_URL": "mongodb://arcomito:arcomito@ds113668.mlab.com:13668/graphql-starter"
+	    }
+	},
+	"private": {}
+}

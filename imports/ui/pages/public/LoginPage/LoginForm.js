@@ -13,7 +13,8 @@ import InputNumber from 'antd/lib/input-number';
 import Select from 'antd/lib/select';
 import message from 'antd/lib/message';
 import Alert from 'antd/lib/alert';
-
+//
+import ApolloClient from '../../../../startup/client/ApolloClient'
 //
 import { handleLogin } from '../../../../modules/helpers'
 import { FormErrorArea } from '../../../components/common'
@@ -34,7 +35,7 @@ class FormComponent extends React.Component {
 	  	const { form, client } = _this.props;
 	    form.validateFields( (err, {email, password}) => {
 	    	if (err) { return _this.setState({ loading: false }) }
-	    	return handleLogin(email, password, client, _this);
+	    	return handleLogin(email, password, ApolloClient, _this);
 	    });
 	}
 	render() {
@@ -70,4 +71,4 @@ class FormComponent extends React.Component {
 
 const LoginForm = Form.create()(FormComponent);
 
-export default withApollo(LoginForm);
+export default LoginForm;

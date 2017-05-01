@@ -29,6 +29,7 @@ const alertErrors = (res, _this) => {
 
 
 export const handleSignup = (email, password, profile, apollo, _this) => {
+  console.log(profile)
   createUser({email, password, profile}, apollo)
     .then(userId => afterLogin(userId, apollo, _this) )
     .catch( res => alertErrors(res, _this) );
@@ -36,17 +37,17 @@ export const handleSignup = (email, password, profile, apollo, _this) => {
 
 
 export const handleLogin = (email, password, apollo, _this) => {
-  loginWithPassword({email, password}, apollo)
+  loginWithPassword({email, password }, apollo)
     .then( (userId) => afterLogin(userId, apollo, _this) )
     .catch( res => alertErrors(res, _this) );
   //onTokenChange(({ userId, token }) => Meteor.loginWithToken(token, () => afterLogin(userId, props)));
 };
 
 
-export const handleLogout = (props, _this) => {
-      logout(props.client)
+export const handleLogout = (apollo, _this) => {
+      logout(apollo)
         .then(()=> { 
-          props.client.resetStore();
+          apollo.resetStore();
           message.success('you are logged out!', 3);
           return browserHistory.push('/'); 
         })
