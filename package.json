@@ -2,7 +2,7 @@
   "name": "meteor-starter-kit",
   "private": true,
   "scripts": {
-    "start": "meteor --settings settings-development.json",
+    "start": "MONGO_URL=mongodb://arcomito:arcomito@ds113668.mlab.com:13668/graphql-starter meteor --settings settings-development.json ",
     "lint": "eslint --quiet --ext .js,.jsx .",
     "prettier": "prettier --write \"client/**/*.js\" \"imports/**/*.js\" \"server/**/*.js\" --single-quote=true --trailing-comma=es5 --print-width=100",
     "test": "npm run lint",
@@ -26,11 +26,13 @@
   "dependencies": {
     "antd": "^2.9.3",
     "apollo-client": "^1.0.0-rc.3",
+    "apollo-errors": "^1.4.0",
     "autoprefixer": "^6.7.7",
     "babel-runtime": "^6.23.0",
     "bcrypt": "^0.8.7",
     "body-parser": "^1.17.1",
     "classnames": "^2.2.5",
+    "cors": "^2.8.3",
     "express": "^4.15.2",
     "graphql": "^0.9.5",
     "graphql-loader": "^1.2.1",

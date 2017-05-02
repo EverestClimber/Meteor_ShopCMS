@@ -46,7 +46,7 @@ class AdminLayout extends React.Component {
   componentWillUnmount() {
       window.removeEventListener("resize", this.updateDimensions);
   }
-  componentWillMount(){
+  /*componentWillMount(){
     if (!this.props.data || !this.props.data.user || !ApolloRoles.userIsInRole('admin', this.props.data.user)) {
       return browserHistory.push('/');
     }
@@ -55,7 +55,7 @@ class AdminLayout extends React.Component {
     if (!nextProps.data || !nextProps.data.user || !ApolloRoles.userIsInRole('admin', nextProps.data.user)) {
       return browserHistory.push('/');
     }
-  }
+  }*/
   toggle(){
     this.setState({
       collapsed: !this.state.collapsed,

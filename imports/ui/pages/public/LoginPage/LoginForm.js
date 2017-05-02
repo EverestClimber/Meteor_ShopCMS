@@ -31,17 +31,17 @@ class FormComponent extends React.Component {
 	onSubmit = (e) => {
 	  	e.preventDefault();
 	  	let _this = this;
-	  	_this.setState({ loading: true })
+	  	_this.setState({ loading: true, errors: [] });
 	  	const { form, client } = _this.props;
 	    form.validateFields( (err, {email, password}) => {
-	    	if (err) { return _this.setState({ loading: false }) }
+	    	if (err) { return _this.setState({ loading: false }); }
 	    	return handleLogin(email, password, ApolloClient, _this);
 	    });
 	}
 	render() {
     const { getFieldDecorator } = this.props.form;
     return (
-      <div className="login-form" >
+      <div className="form-card" >
       <Card>
 	      <Form onSubmit={this.onSubmit} >
 	            <FormItem hasFeedback>

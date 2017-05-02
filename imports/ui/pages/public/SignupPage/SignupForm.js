@@ -30,7 +30,7 @@ class FormComponent extends React.Component {
 	handleSubmit = (e) => {
 	    e.preventDefault();
 	    let _this = this;
-      _this.setState({ loading: true })
+      _this.setState({ loading: true, errors: [] });
 	    _this.props.form.validateFields((err, { firstName, lastName, email, password }) => {
         if (err) { return _this.setState({ loading: false }) }
         let profile = { name: { first: firstName, last: lastName } }
@@ -41,9 +41,9 @@ class FormComponent extends React.Component {
 	render() {
     const { getFieldDecorator } = this.props.form;
     return (
-      <div>
+      <div className="form-card" >
         <Card>
-        <Form onSubmit={this.handleSubmit} style={{width: 400, maxWidth: '90%', margin: 'auto'}}>
+        <Form onSubmit={this.handleSubmit}>
             <FormItem hasFeedback>
               {getFieldDecorator('firstName', {
                 rules: [{ required: true, message: 'Input your First Name!' }],

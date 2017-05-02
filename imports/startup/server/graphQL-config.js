@@ -4,6 +4,7 @@ import { typeDefs, resolvers } from '/imports/api/schema';
 //import { UserSchema} from '/imports/api/User';
 import {loadSchema, getSchema} from 'graphql-loader'
 import {initAccounts} from 'meteor/nicolaslopezj:apollo-accounts'
+import cors from 'cors';
 
 //set options
 // Load all accounts related resolvers and type definitions into graphql-loader
@@ -16,4 +17,6 @@ loadSchema({typeDefs, resolvers});
 const schema = makeExecutableSchema(getSchema());
 
 //create server
-createApolloServer({ schema });
+createApolloServer({ schema }, {
+  configServer: graphQLServer => graphQLServer.use(cors()),
+});
