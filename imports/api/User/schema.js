@@ -16,8 +16,10 @@ type Name {
   last: String
 }
 
+
 type Profile {
   name: Name
+  cell: String
 }
 
 type User {

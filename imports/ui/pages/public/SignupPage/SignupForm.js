@@ -31,9 +31,12 @@ class FormComponent extends React.Component {
 	    e.preventDefault();
 	    let _this = this;
       _this.setState({ loading: true, errors: [] });
-	    _this.props.form.validateFields((err, { firstName, lastName, email, password }) => {
+	    _this.props.form.validateFields((err, { firstName, lastName, email, password, cell }) => {
         if (err) { return _this.setState({ loading: false }) }
-        let profile = { name: { first: firstName, last: lastName } }
+        let profile = { 
+          cell, 
+          //name: { first: firstName, last: lastName } 
+        }
         handleSignup(email, password, profile, ApolloClient, _this)
 	    });
 
@@ -56,6 +59,13 @@ class FormComponent extends React.Component {
                 rules: [{ required: true, message: 'Input your Last Name!' }],
               })(
                 <Input prefix={<Icon type="user" />} placeholder="Last Name..." />
+              )}
+            </FormItem>
+            <FormItem hasFeedback>
+              {getFieldDecorator('cell', {
+                rules: [{ required: true, message: 'Input your cell!' }],
+              })(
+                <Input prefix={<Icon type="user" />} placeholder="cell..." />
               )}
             </FormItem>
             <FormItem hasFeedback>
