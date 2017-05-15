@@ -3,7 +3,7 @@ import React from 'react';
 import { Meteor } from 'meteor/meteor';
 import { render } from 'react-dom';
 //APOLLO SPECIFIC
-import ApolloClient from './ApolloClient'
+import ApolloClient from '../../ui/apollo/ApolloClient'
 import { ApolloProvider } from 'react-apollo';
 //ROUTES
 import AppRoutes  from './routes.js';

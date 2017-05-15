@@ -2,9 +2,65 @@
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 
 
+
+// LOCATION SCHEMA
+// ---------------------------------------------
+
+export const addressSchema = new SimpleSchema({
+    fullAddress: {
+        type: String,
+        optional: true
+    },
+    lat: {
+        type: Number,
+        decimal: true,
+        optional: true
+    },
+    lng: {
+        type: Number,
+        decimal: true,
+        optional: true
+    },
+    geometry: {
+        type: Object,
+        blackbox: true,
+        optional: true
+    },
+    placeId: {
+        type: String,
+        optional: true
+    },
+    street: {
+        type: String,
+        max: 100,
+        optional: true
+    },
+    city: {
+        type: String,
+        max: 50,
+        optional: true
+    },
+    state: {
+        type: String,
+        optional: true
+    },
+    zip: {
+        type: String,
+        optional: true
+    },
+    country: {
+        type: String,
+        optional: true
+    },
+    maps_url: {
+        type: String,
+        optional: true
+    },
+});
+
 // BASE MODEL
 // ---------------------------------------------
-const baseModel = new SimpleSchema({
+export const baseModel = new SimpleSchema({
   title: {
     type: String,
     optional: true,
@@ -30,8 +86,8 @@ const baseModel = new SimpleSchema({
     optional: true,
   },
   deleted: {
-  	type: Boolean,
-  	autoValue: function() {
+    type: Boolean,
+    autoValue: function() {
         if (this.isInsert && (!this.isSet || this.value.length === 0)) {  // only set on insert
             return false
         }
@@ -65,4 +121,3 @@ const baseModel = new SimpleSchema({
 
 // EXPORT BASE MODEL
 // ---------------------------------------------
-export default baseModel

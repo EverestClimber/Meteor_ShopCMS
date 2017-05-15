@@ -7,6 +7,8 @@ const users = [{
   password: 'password',
   profile: {
     name: { first: 'Carl', last: 'Winslow' },
+    firstName: 'Carl',
+    lastName: 'Winslow',
   },
   roles: ['admin'],
 }];

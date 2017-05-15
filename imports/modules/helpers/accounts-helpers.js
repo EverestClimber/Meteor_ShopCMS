@@ -9,6 +9,7 @@ const afterLogin = (userId, apollo, _this) => {
   message.success('we in this bitch!'); 
   apollo.resetStore();
   _this.setState({ loading: false });
+  return browserHistory.push('/admin');
 /*  if (Roles.userIsInRole(userId, ['admin'])) {
       return browserHistory.push('/admin');
   } else {

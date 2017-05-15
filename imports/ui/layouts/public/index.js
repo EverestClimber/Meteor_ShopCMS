@@ -85,10 +85,8 @@ class PublicLayout extends React.Component {
             mode="horizontal" 
             style={{ lineHeight: '64px' }}
           >
-            <Menu.Item key="/">Home</Menu.Item>
-            {!this.props.data || !this.props.data.user && <Menu.Item key="/login">Login</Menu.Item>}
+            {!this.props.data || !this.props.data.user && <Menu.Item key="/">Login</Menu.Item>}
             {!this.props.data || !this.props.data.user && <Menu.Item key="/signup">Signup</Menu.Item>}
-            {this.props.data && this.props.data.user && <Menu.Item key="/documents">Documents</Menu.Item>}
             {this.props.data && this.props.data.user && <Menu.Item key="logout">Logout</Menu.Item>}
           </Menu>
         </Header>

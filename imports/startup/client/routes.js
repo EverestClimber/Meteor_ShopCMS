@@ -20,6 +20,8 @@ import DocumentDetailPage from '../../ui/pages/app/DocumentDetail';
 import AdminUsersPage from '../../ui/pages/admin/admin-users';
 import AdminUsersSinglePage from '../../ui/pages/admin/admin-user-single';
 import AdminAccountPage from '../../ui/pages/admin/admin-account';
+import AdminShopsPage from '../../ui/pages/admin/admin-shops';
+import AdminAddShopPage from '../../ui/pages/admin/admin-add-shop';
 
 // THEME
 import enUS from 'antd/lib/locale-provider/en_US';
@@ -38,18 +40,17 @@ const AppRoutes = () => {
 
       {/*PUBLIC AREA*/}
       <Route path="/" component={ PublicLayout }>
-        <IndexRoute name='index' component={ LandingPage } />
+        <IndexRoute name='index' component={ LoginPage } />
         <Route path="/login" component={ LoginPage } />
         <Route path="/signup" component={ SignupPage } />
-        <Route path="/documents" component={ DocumentsListPage } />
-        <Route path="/documents/:_id" component={ DocumentDetailPage } />
-        
       </Route>
 
       {/*ADMIN AREA*/}
       <Route path="/admin" component={ AdminLayout }>
         <IndexRoute name="index" component={ AdminHomePage } />
         <Route path="/admin/users" component={ AdminUsersPage }  />
+        <Route path="/admin/shops" component={ AdminShopsPage }  />
+        <Route path="/admin/shops/create" component={ AdminAddShopPage }  />
         <Route path="/admin/users/:_id" component={ AdminUsersSinglePage }  />
         <Route path="/admin/account" component={ AdminAccountPage }  />
       </Route>

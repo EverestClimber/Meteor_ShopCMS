@@ -2,9 +2,22 @@
 {
 	"galaxy.meteor.com": {
 	    "env": {
-	      "ROOT_URL": "https://spacebug.meteorapp.com",
-	      "MONGO_URL": "mongodb://arcomito:arcomito@ds113668.mlab.com:13668/graphql-starter"
+	      "ROOT_URL": "https://truelife.meteorapp.com",
+	      "MONGO_URL": "mongodb://arcomito:arcomito@ds143231.mlab.com:43231/truelife-dev"
 	    }
+	},
+	"AWSAccessKeyId": "AKIAJMIQXUNQZAUFNOXA",
+  	"AWSSecretAccessKey": "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",
+  	"public":{
+		"config": {
+			"appName": "TrueLife",
+			"supportEmail": "support@TrueLife.com",
+			"supportName": "Support"
+		}
+	},
+	"config": {
+		"textOn": true,
+		"emailOn": true
 	},
 	"private": {}
 }

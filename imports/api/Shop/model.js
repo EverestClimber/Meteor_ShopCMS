@@ -3,30 +3,42 @@ import { SimpleSchema } from 'meteor/aldeed:simple-schema';
 import { baseModel, addressSchema} from '../base-model';
 
 //declare collection name and export it
-export const Documents = new Mongo.Collection('Documents');
+export const Shops = new Mongo.Collection('Shops');
 
 //attach basics via baseModel (createdAt, title, etc.)
-Documents.baseModel = baseModel;
+Shops.baseModel = baseModel;
 
-Documents.allow({
+Shops.allow({
   insert: () => false,
   update: () => false,
   remove: () => false,
 });
 
-Documents.deny({
+Shops.deny({
   insert: () => true,
   update: () => true,
   remove: () => true,
 });
 
 
-Documents.schema = new SimpleSchema({
+Shops.schema = new SimpleSchema({
   title: {
     type: String,
     optional: true,
   },
-  content: {
+  description: {
+    type: String,
+    optional: true,
+  },
+  location: {
+    type: addressSchema,
+    optional: true
+  },
+  category: {
+    type: String,
+    optional: true,
+  },
+  image: {
     type: String,
     optional: true,
   },
@@ -43,5 +55,5 @@ Documents.schema = new SimpleSchema({
 
 
 
-Documents.attachSchema(Documents.schema);
-Documents.attachSchema(Documents.baseModel);
+Shops.attachSchema(Shops.schema);
+Shops.attachSchema(Shops.baseModel);
