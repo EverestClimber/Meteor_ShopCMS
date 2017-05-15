@@ -43,7 +43,13 @@ type Query {
 type Mutation {
     saveUserImage(image: String!): User
     saveUserExpoPushId(expoPushId: String!): User
-    saveUserProfile(email: String!, _id: ID!): User
+    saveUserProfile (
+      email: String!, 
+      _id: ID
+      firstName: String
+      lastName: String
+      image: String
+    ): User
   }
 
 `];
