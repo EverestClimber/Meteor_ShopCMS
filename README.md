@@ -17,10 +17,17 @@ Check `package.json` for specific versions
 
 ### Running it
 
-```
-meteor npm install
-meteor
-```
+* clone the repo from github
+* cd into the root directory
+* run `meteor npm install` to download all the NPM packages
+* run `meteor npm start` to run the app. After it boots up, it will be available at localhost:3000
+
+### Deploying to galaxy
+
+* `cd` into the root directory of the project
+* run `npm run staging` to push to the staging server ( setup for Galaxy hosting )
+* run `npm run production` to push to the production server ( setup for Galaxy hosting )
+
 
 GraphiQL is enabled at [/graphiql](http://localhost:3000/graphiql).
 

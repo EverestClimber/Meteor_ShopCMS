@@ -24,7 +24,7 @@ type Shop {
 
 type Query {
 	    shopById(_id: ID!): Shop,
-    	shops: [Shop],
+    	shops(string: String, offset: Int): [Shop],
 	  }
 
 type Mutation {
@@ -44,11 +44,21 @@ type Mutation {
 `];
 
 
-
 export const ShopResolvers = {
 	Query: {
 	    shopById: (root, args, context) => Shops.findOne({ _id: args._id }),
-	    shops: () => Shops.find().fetch(),
+	    shops: (root, args, context) => {
+	    	let options = { limit: 10, sort: { createdAt: -1 } }
+	    	if (args && args.offset) {
+	    		options.skip = args.offset
+	    	}
+	    	if (!args || !args.string) {
+	    		return Shops.find({}, options).fetch();
+	    	}
+	    	let regex = new RegExp( args.string, 'i' );
+	    	let query = { title: regex }
+	    	return Shops.find(query, options).fetch();
+	    },
   	},
   	Shop: {
   		owner: ({ ownerId }, args, context) => {
