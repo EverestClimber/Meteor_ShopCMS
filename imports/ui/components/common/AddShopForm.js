@@ -12,6 +12,11 @@ import { SingleImageUpload } from './SingleImageUpload'
 import Geosuggest from 'react-geosuggest';
  
 
+const CATEGORY_OPTIONS = [
+  { label: 'food', value: 'food'},
+  { label: 'clothing', value: 'clothing'},
+  { label: 'electronics', value: 'electronics'}
+];
 
 /*const buildReport = (args) => {
   let report = {
@@ -70,47 +75,25 @@ class AddShop extends React.Component {
         )}
       >
         <Form layout="vertical">
-        <SingleImageUpload onSuccessfulUpload={this.onSuccessfulUpload} />
+        <SingleImageUpload onSuccessfulUpload={(image) => this.setState({ image })} />
           <FormItem label="title">
             {getFieldDecorator('title')(<Input type="title" />)}
           </FormItem>
           <Geosuggest 
-            
-            onSuggestSelect={(location)=>{
-                console.log(location)
-                this.setState({location})
-            }} 
+            onSuggestSelect={({location}) => this.setState({latitude: location.lat, longitude: location.lng})} 
           />
           <FormItem label="description">
             {getFieldDecorator('description')(<Input type="description" />)}
           </FormItem>
-          {/*<FormItem label="Watch Group">
-              {getFieldDecorator('watchgroupId', {
-                rules: [{ required: true, message: 'Please input your watchgroupId!' }],
-              })(
-                <Select style={{ width: '100%' }} placeholder="Please select a watchgroup" >
-                  {getWatchgroupOptions(watchgroups)}
-                </Select>
-              )}
-            </FormItem>
-            <FormItem label="Report Type">
-            {getFieldDecorator('reportType', {
+            <FormItem label="Category">
+            {getFieldDecorator('category', {
               rules: [{ required: true, message: 'Please input your Report Type!' }],
             })(
               <Select style={{ width: '100%' }} placeholder="Please select a Report Type" >
-                {REPORT_TYPE.map( item => <Option key={item.key} value={item.label}> {item.label} </Option>)}
+                {CATEGORY_OPTIONS.map( item => <Option key={item.key} value={item.label}> {item.label} </Option>)}
               </Select>
             )}
           </FormItem>
-          <FormItem label="Priotiy Level">
-            {getFieldDecorator('priorityLevel', {
-              rules: [{ required: true, message: 'Please input your Priotiy Level!' }],
-            })(
-              <Select style={{ width: '100%' }} placeholder="Please select a Priotiy Level" >
-                {PRIORITY_LEVEL.map( item => <Option key={item.key} value={item.value}> {item.label} </Option>)}
-              </Select>
-            )}
-          </FormItem>*/}
         </Form>
       </Modal>
     );

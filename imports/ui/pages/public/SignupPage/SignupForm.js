@@ -14,7 +14,7 @@ import Select from 'antd/lib/select';
 import message from 'antd/lib/message';
 //
 //
-import ApolloClient from '../../../../startup/client/ApolloClient'
+import ApolloClient from '/imports/ui/apollo/ApolloClient'
 //
 import { handleSignup } from '../../../../modules/helpers'
 import { FormErrorArea } from '../../../components/common'

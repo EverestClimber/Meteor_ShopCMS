@@ -1,47 +1,67 @@
+//TOP LEVEL IMPORTS
 import React from 'react';
-import { graphql } from 'react-apollo';
 import { Link, browserHistory } from 'react-router';
+//APOLLO
+import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
+import { FETCH_SHOPS } from '/imports/ui/apollo/queries'
+import { CREATE_SHOP } from '/imports/ui/apollo/mutations'
+
+// ANTD
 import Table from 'antd/lib/table';
 import Button from 'antd/lib/button';
+import Row from 'antd/lib/row';
+// COMPONENTS
 import { AddShopForm } from '../../components/common';
 
 
+// CONSTANTS & DESTRUCTURING
+// ==============================
 const columns = [
 	{
 	  title: '_id',
 	  dataIndex: '_id',
 	  key: '_id',
-	  render: _id => <Link to={`/admin/users/${_id}`}>{_id}</Link>,
+	  //render: _id => <Link to={`/admin/users/${_id}`}>{_id}</Link>,
 	},
 	{
-	  title: 'email',
-	  dataIndex: 'emails.0.address',
-	  key: 'emails.0.address'
+	  title: 'title',
+	  dataIndex: 'title',
+	  key: 'title'
 	},
-	{
-	  title: 'role',
-	  dataIndex: 'roles',
-	  key: 'roles'
+	{	
+	  title: 'description',
+	  dataIndex: 'description',
+	  key: 'description'
+	},
+	{	
+	  title: 'category',
+	  dataIndex: 'category',
+	  key: 'category'
 	},
 ];
 
 
-class AdminUsersTable extends React.Component {
+// INTERNAL COMPONENTS
+// ==============================
+class AdminShopsTable extends React.Component {
 	render(){
 		return (
 			<Table
-				rowKey={record => record._id} 
-				columns={columns} 
-				dataSource={this.props.users}  
+				rowKey={record => record._id}
+				columns={columns}
+				dataSource={this.props.shops}  
 			/>
 		);
 	}
 }
 
+
+// EXPORTED COMPONENT
+// ==============================
 class AdminShopsPage extends React.Component {
 
-	state = { visible: false, loadingSubmit: false }
+	state = { visible: false, loadingSubmit: false, errors: [] }
 
 	handleCancel = () => {
 		this.setState({ visible: false });
@@ -52,59 +72,57 @@ class AdminShopsPage extends React.Component {
 	handleCreate = ({longitude, latitude, image}) => {
 		const form = this.form;
 		this.setState({loadingSubmit: true})
-		form.validateFields((err, { title, description, image }) => {
-			if (err) { return; }
-			let variables = { title, description, image };
+		form.validateFields((err, { title, description, category }) => {
+			if (err) { return this.setState({loadingSubmit: false}); }
+			let variables = { title, description, category, image, latitude, longitude };
 			console.log(variables);
-			this.setState({visible: false, loadingSubmit: false});
-		});
-		/*form.validateFields((err, { messageValue, watchgroupId, priorityLevel, reportType }) => {
-			if (err) { return; }
-			let variables = { image, longitude, latitude, messageValue, watchgroupId, priorityLevel, reportType }
 			this.props.mutate({ variables })
-			.then(() => {
-			this.props.data.refetch()
-			form.resetFields();
-			return this.setState({ visible: false, loadingSubmit: false });
-			}).catch(e => {
-			const errors = e.graphQLErrors.map( err => err.message );
-			console.log('error ran');
-			console.log(errors);
+				.then(() => {
+					this.props.data.refetch()
+					form.resetFields();
+					return this.setState({ visible: false, loadingSubmit: false });
+				})
+				.catch(e => {
+					const errors = e.graphQLErrors.map( err => err.message );
+					this.setState({ visible: false, loadingSubmit: false, errors });
+					console.log('error ran');
+					return console.log(errors);
 			});
-		});*/
+
+		});
 	}
 	saveFormRef = (form) => {
 	this.form = form;
 	}
 
 	render(){
-		//const { loading, users } = this.props.data;
+		const { loading, shops } = this.props.data;
 
-		//if (loading) { return <div>Loading...</div>; }
+		if (loading) { return <div>Loading...</div>; }
 
 		return (
 			<div>
 				<Button type="primary" onClick={this.showModal}>+ Add Shop</Button>
 				<AddShopForm
-				ref={this.saveFormRef}
-				visible={this.state.visible}
-				onCancel={this.handleCancel}
-				onCreate={this.handleCreate}
-				loadingSubmit={this.state.loadingSubmit}
-				{...this.props}
+					ref={this.saveFormRef}
+					visible={this.state.visible}
+					onCancel={this.handleCancel}
+					onCreate={this.handleCreate}
+					loadingSubmit={this.state.loadingSubmit}
+					{...this.props}
 				/>
+				<Row>
+					<AdminShopsTable shops={shops} />
+				</Row>
 			</div>
 		);
 	}
 }
 
-/*const GET_SHOPS = gql`
-  query getShops {
-    shops {
-      _id
-    }
-  }
-`;*/
 
+// EXPORT
+// ==============================
+export default graphql(CREATE_SHOP)(
+	graphql(FETCH_SHOPS)(AdminShopsPage)
+);
 
-export default AdminShopsPage //graphql(GET_SHOPS)(AdminUsersPage);

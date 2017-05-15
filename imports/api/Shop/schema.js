@@ -65,8 +65,9 @@ export const ShopResolvers = {
 
 			let shop = await buildShop(args, context.user)
 			console.log(shop)
-			return {
-				_id: 'fsdfsafsadfasfa'
+			let docId = Shops.insert(shop);
+			if (docId) {
+				return Shops.findOne({_id: docId});
 			}
 			/*args.ownerId = context.user._id;
 			let docId = Shops.insert({...args});

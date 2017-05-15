@@ -24,7 +24,7 @@ type Address {
 	    state: String
 	    zip: Int
 	    country: Int
-	    maps_url: User
+	    maps_url: String
 	}
 `];
 

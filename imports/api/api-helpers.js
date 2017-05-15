@@ -39,15 +39,14 @@ export const buildShop = async (args, user) => {
 		location = await getLocation(args.latitude, args.longitude);
 	}
 	
-
 	return new Promise(
 	    (resolve, reject) => { // fat arrow
 	    	let report = {
-	    		title: args.title,
-	    		description: args.description,
-	    		category: args.category,
+	    		title: args.title || null,
+	    		description: args.description || null,
+	    		category: args.category || null,
 				ownerId: user._id,
-				ownerName: `${user.profile.firstName} ${user.profile.lastName}`,
+				ownerName: `${user.profile.firstName} ${user.profile.lastName}` || null,
 				image: args.image || null,
 				location
 			}
