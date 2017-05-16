@@ -74,6 +74,7 @@ Shops.schema = new SimpleSchema({
 });
 
 
-
 Shops.attachSchema(Shops.schema);
 Shops.attachSchema(Shops.baseModel);
+// INDEXES
+Shops._ensureIndex({'location.coordinates':'2dsphere'});  

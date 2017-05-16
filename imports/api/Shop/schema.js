@@ -104,20 +104,6 @@ export const ShopResolvers = {
 	    shops: async (root, args, context) => {
 	    	let shopsToReturn = await getShopSearchResults(root, args, context);
 	    	return shopsToReturn
-	    	/*let options = { limit: 10, sort: { createdAt: -1 } }
-	    	if (args && args.offset) { options.skip = args.offset }
-	    	if (!args || !args.string) {
-	    		return Shops.find({}, options).fetch();
-	    	}
-	    	let regex = new RegExp( args.string, 'i' );
-	    	let query = { $or: [
-	    			{ title: regex },
-	    			{ description: regex },
-	    			{ category: regex },
-	    			{ 'location.fullAddress': regex }
-	    		]
-	    	}
-	    	return Shops.find(query, options).fetch();*/
 	    },
   	},
   	Shop: {
@@ -132,18 +118,15 @@ export const ShopResolvers = {
 			if (!context.user) {
 				throw new FooError({ data: { authentication: 'you must sign in first' } });
 			}
-
+			// TODO: check if record already exists
+			//	check by a regex on title AND a query for lat/lng (maybe within X miles)
 			let shop = await buildShop(args, context.user)
 			console.log(shop)
 			let docId = Shops.insert(shop);
 			if (docId) {
 				return Shops.findOne({_id: docId});
 			}
-			/*args.ownerId = context.user._id;
-			let docId = Shops.insert({...args});
-			if (docId) {
-				return Shops.findOne({_id: docId});
-			}*/
+
 		},
 	}
 };

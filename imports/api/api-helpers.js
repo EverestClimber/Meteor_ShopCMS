@@ -18,8 +18,8 @@ export const getLocation = (latitude, longitude) => {
 		          street_number: response.results[0].address_components[0].short_name,
 		          street: response.results[0].address_components[1].short_name,
 		          city: response.results[0].address_components[3].short_name,
-		          state: response.results[0].address_components[5].short_name,
-		          zip: response.results[0].address_components[7].short_name,
+		          //state: response.results[0].address_components[5].short_name,
+		          //zip: response.results[0].address_components[7].short_name,
 		          country: response.results[0].address_components[6].short_name,
 		          //maps_url: data.location.maps_url,
 		        }
@@ -46,6 +46,9 @@ export const buildShop = async (args, user) => {
 	    		description: args.description || null,
 	    		category: args.category || null,
 				ownerId: user._id,
+				phone: user.phone,
+				website: user.website,
+				email: user.email,
 				//ownerName: `${user.profile.firstName} ${user.profile.lastName}` || null,
 				image: args.image || null,
 				location
