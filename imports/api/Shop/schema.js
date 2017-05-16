@@ -10,6 +10,36 @@ const FooError = createError('FooError', {
   message: 'A foo error has occurred'
 });
 
+
+const getShopSearchResults = async (root, args, context) => {
+	
+	return new Promise(
+	    (resolve, reject) => {
+
+	    	let options = { limit: 10, sort: { createdAt: -1 } }
+			if (args && args.offset) { options.skip = args.offset }
+			if (!args || !args.string) {
+				let shops = Shops.find({}, options).fetch();
+				resolve(shops)
+			}
+			let regex = new RegExp( args.string, 'i' );
+			let query = { $or: [
+					{ title: regex },
+					{ description: regex },
+					{ category: regex },
+					{ 'location.fullAddress': regex },
+					{ 'location.city': regex },
+					{ 'location.country': regex },
+					{ 'location.street': regex }
+				]
+			}
+	    	let shops = Shops.find(query, options).fetch();
+	    	resolve(shops)
+	    }
+	)
+};
+
+
 export const ShopSchema = [`
 
 
@@ -71,15 +101,23 @@ export const ShopResolvers = {
 	    	query.title = regex; // if search term exists, add it to the query object 
 	    	return Shops.find(query, options).fetch(); // then return the given query
 	    },
-	    shops: (root, args, context) => {
-	    	let options = { limit: 10, sort: { createdAt: -1 } }
+	    shops: async (root, args, context) => {
+	    	let shopsToReturn = await getShopSearchResults(root, args, context);
+	    	return shopsToReturn
+	    	/*let options = { limit: 10, sort: { createdAt: -1 } }
 	    	if (args && args.offset) { options.skip = args.offset }
 	    	if (!args || !args.string) {
 	    		return Shops.find({}, options).fetch();
 	    	}
 	    	let regex = new RegExp( args.string, 'i' );
-	    	let query = { title: regex }
-	    	return Shops.find(query, options).fetch();
+	    	let query = { $or: [
+	    			{ title: regex },
+	    			{ description: regex },
+	    			{ category: regex },
+	    			{ 'location.fullAddress': regex }
+	    		]
+	    	}
+	    	return Shops.find(query, options).fetch();*/
 	    },
   	},
   	Shop: {
