@@ -46,7 +46,7 @@ export const buildShop = async (args, user) => {
 	    		description: args.description || null,
 	    		category: args.category || null,
 				ownerId: user._id,
-				ownerName: `${user.profile.firstName} ${user.profile.lastName}` || null,
+				//ownerName: `${user.profile.firstName} ${user.profile.lastName}` || null,
 				image: args.image || null,
 				location
 			}

@@ -38,6 +38,26 @@ Shops.schema = new SimpleSchema({
     type: String,
     optional: true,
   },
+  phone: {
+    type: String,
+    optional: true,
+  },
+  website: {
+    type: String,
+    optional: true,
+  },
+  email: {
+    type: String,
+    optional: true,
+  },
+  contactName: {
+    type: String,
+    optional: true,
+  },
+  openDays: {
+    type: [String],
+    optional: true,
+  },
   image: {
     type: String,
     optional: true,

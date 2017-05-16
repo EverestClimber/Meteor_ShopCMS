@@ -12,18 +12,25 @@ const FooError = createError('FooError', {
 
 export const ShopSchema = [`
 
+
 type Shop {
 	    _id: ID!
 	    title: String!, 
 	  	description: String!
 	  	category: String!
 	  	image: String
+	  	phone: String
+	  	website: String
+	  	email: String
+	  	contactName: String
+	  	openDays: [String]
 	    location: Address
 	    owner: User
 	}
 
 type Query {
 	    shopById(_id: ID!): Shop,
+	    shopsByOwner(string: String, offset: Int): [Shop],
     	shops(string: String, offset: Int): [Shop],
 	  }
 
@@ -38,6 +45,11 @@ type Mutation {
 	  	image: String
 	  	latitude: String
 	  	longitude: String
+	  	phone: String
+	  	website: String
+	  	email: String
+	  	contactName: String
+	  	openDays: [String]
 	  ): Shop
 	}
 
@@ -47,11 +59,21 @@ type Mutation {
 export const ShopResolvers = {
 	Query: {
 	    shopById: (root, args, context) => Shops.findOne({ _id: args._id }),
+	    shopsByOwner: (root, args, context) => {
+	    	if (!context.user) { return []; } // if no user exists in context, return an empty array
+	    	let query = { ownerId: context.user._id }; //declare the query variable
+	    	let options = { limit: 10, sort: { createdAt: -1 } } //set default options
+	    	if (args && args.offset) { options.skip = args.offset } //if offset was passed, assign new offset value to query options
+	    	if (!args || !args.string) {
+	    		return Shops.find(query, options).fetch(); // if no search term exists, just return shops by ownerId
+	    	}
+	    	let regex = new RegExp( args.string, 'i' ); //create a regex for a fuzzy search
+	    	query.title = regex; // if search term exists, add it to the query object 
+	    	return Shops.find(query, options).fetch(); // then return the given query
+	    },
 	    shops: (root, args, context) => {
 	    	let options = { limit: 10, sort: { createdAt: -1 } }
-	    	if (args && args.offset) {
-	    		options.skip = args.offset
-	    	}
+	    	if (args && args.offset) { options.skip = args.offset }
 	    	if (!args || !args.string) {
 	    		return Shops.find({}, options).fetch();
 	    	}
