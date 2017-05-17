@@ -1,7 +1,8 @@
 import { Random } from 'meteor/random';
 import { UserResolvers, UserSchema } from './User';
-import { DocumentResolvers, DocumentSchema } from './Document';
 import { ShopResolvers, ShopSchema } from './Shop';
+import { MallResolvers, MallSchema } from './Mall';
+import { AttachmentResolvers, AttachmentSchema } from './Attachment';
 import { merge } from 'lodash';
 
 
@@ -46,16 +47,18 @@ export const BaseResolvers = {
 export const typeDefs = [
 	...BaseSchemas,
 	...UserSchema, 
-	...DocumentSchema,
-	...ShopSchema
+	...ShopSchema,
+	...MallSchema,
+	...AttachmentSchema
 ];
 
 
 export const resolvers = merge(
 	BaseResolvers,
 	UserResolvers, 
-	DocumentResolvers,
-	ShopResolvers
+	ShopResolvers,
+	MallResolvers,
+	AttachmentResolvers
 );
 
 

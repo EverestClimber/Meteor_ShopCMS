@@ -2,6 +2,7 @@ import { Random } from 'meteor/random';
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Shops } from './model';
+import { Malls } from './model';
 import { createError } from 'apollo-errors';
 import { buildShop } from '../api-helpers';
 
@@ -10,6 +11,9 @@ const FooError = createError('FooError', {
   message: 'A foo error has occurred'
 });
 
+const buildMall = () => {
+	return {};
+}
 
 const getShopSearchResults = async (root, args, context) => {
 	
@@ -40,80 +44,57 @@ const getShopSearchResults = async (root, args, context) => {
 };
 
 
-export const ShopSchema = [`
+export const MallSchema = [`
 
 
-type Shop {
+type Mall {
 	    _id: ID!
 	    title: String!, 
 	  	description: String!
-	  	category: String!
-	  	image: String
-	  	phone: String
-	  	phone2: String
-	  	website: String
-	  	email: String
-	  	contactName: String
-	  	instagram: String
-	  	facebook: String
-	  	twitter: String
-	  	youtube: String
-	  	mallId: String
 	  	openDays: [String]
 	    location: Address
+	    numberOfStores: Int
 	    owner: User
+	    shops: [Shop]
 	}
 
 type Query {
-	    shopById(_id: ID!): Shop,
-	    shopsByOwner(string: String, offset: Int): [Shop],
-    	shops(string: String, offset: Int): [Shop],
+	    mallById(_id: ID!): Mall,
+	    mallsByOwner(string: String, offset: Int): [Mall],
+    	malls(string: String, offset: Int): [Mall],
 	  }
 
 type Mutation {
 	  # creates a new document 
 	  # title is the document title
 	  # content is the document content
-	  createShop(
-	  	title: String!, 
+	  createMall(
+	    title: String!, 
 	  	description: String!
-	  	category: String!
-	  	image: String
 	  	latitude: String
 	  	longitude: String
-	  	mallId: String
-	  	phone: String
-	  	phone2: String
-	  	website: String
-	  	email: String
-	  	instagram: String
-	  	facebook: String
-	  	twitter: String
-	  	youtube: String
-	  	contactName: String
-	  	openDays: [String]
 	  ): Shop
 	}
 
 `];
 
 
-export const ShopResolvers = {
+export const MallResolvers = {
 	Query: {
-	    shopById: (root, args, context) => Shops.findOne({ _id: args._id }),
-	    shopsByOwner: (root, args, context) => {
+	    mallById: (root, args, context) => Shops.findOne({ _id: args._id }),
+	    mallsByOwner: (root, args, context) => {
 	    	if (!context.user) { return []; } // if no user exists in context, return an empty array
 	    	let query = { ownerId: context.user._id }; //declare the query variable
 	    	let options = { limit: 10, sort: { createdAt: -1 } } //set default options
 	    	if (args && args.offset) { options.skip = args.offset } //if offset was passed, assign new offset value to query options
 	    	if (!args || !args.string) {
-	    		return Shops.find(query, options).fetch(); // if no search term exists, just return shops by ownerId
+	    		return Malls.find(query, options).fetch(); // if no search term exists, just return shops by ownerId
 	    	}
 	    	let regex = new RegExp( args.string, 'i' ); //create a regex for a fuzzy search
 	    	query.title = regex; // if search term exists, add it to the query object 
-	    	return Shops.find(query, options).fetch(); // then return the given query
+	    	return Malls.find(query, options).fetch(); // then return the given query
 	    },
-	    shops: async (root, args, context) => {
+	    malls: async (root, args, context) => {
 	    	let shopsToReturn = await getShopSearchResults(root, args, context);
 	    	return shopsToReturn
 	    },
@@ -126,17 +107,17 @@ export const ShopResolvers = {
   		}
   	},
 	Mutation: {
-		async createShop(root, args, context) {
+		async createMall(root, args, context) {
 			if (!context.user) {
 				throw new FooError({ data: { authentication: 'you must sign in first' } });
 			}
 			// TODO: check if record already exists
 			//	check by a regex on title AND a query for lat/lng (maybe within X miles)
-			let shop = await buildShop(args, context.user)
-			console.log(shop)
-			let docId = Shops.insert(shop);
+			let mall = await buildMall(args, context.user)
+			console.log(mall)
+			let docId = Malls.insert(mall);
 			if (docId) {
-				return Shops.findOne({_id: docId});
+				return Malls.findOne({_id: docId});
 			}
 
 		},

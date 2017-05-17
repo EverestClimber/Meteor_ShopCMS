@@ -42,7 +42,27 @@ Shops.schema = new SimpleSchema({
     type: String,
     optional: true,
   },
+  phone2: {
+    type: String,
+    optional: true,
+  },
   website: {
+    type: String,
+    optional: true,
+  },
+  instagram: {
+    type: String,
+    optional: true,
+  },
+  facebook: {
+    type: String,
+    optional: true,
+  },
+  twitter: {
+    type: String,
+    optional: true,
+  },
+  youtube: {
     type: String,
     optional: true,
   },
@@ -61,6 +81,18 @@ Shops.schema = new SimpleSchema({
   image: {
     type: String,
     optional: true,
+  },
+  mallId: {
+    type: String,
+    optional: true,
+  },
+  numberOfReviews: {
+    type: Number,
+    autoValue: function() {
+        if (this.isInsert && (!this.isSet || this.value.length === 0)) {  // only set on insert
+            return 0
+        }
+    }
   },
   schemaVersion: {
     type: Number,

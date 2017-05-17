@@ -2,7 +2,7 @@
 {
 	"galaxy.meteor.com": {
 	    "env": {
-	      "ROOT_URL": "https://truelife-dev.meteorapp.com",
+	      "ROOT_URL": "https://truelife.meteorapp.com",
 	      "MONGO_URL": "mongodb://arcomito:arcomito@ds143231.mlab.com:43231/truelife-dev"
 	    }
 	},
