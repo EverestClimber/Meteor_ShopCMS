@@ -95,8 +95,7 @@ export const MallResolvers = {
 	    	return Malls.find(query, options).fetch(); // then return the given query
 	    },
 	    malls: async (root, args, context) => {
-	    	let shopsToReturn = await getShopSearchResults(root, args, context);
-	    	return shopsToReturn
+	    	return Malls.find().fetch()
 	    },
   	},
   	Shop: {

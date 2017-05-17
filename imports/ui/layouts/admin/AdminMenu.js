@@ -32,11 +32,15 @@ export const AdminMenu = ({handleClick, location}) => {
               <span className="nav-text">Home</span>
             </Menu.Item>
             <Menu.Item key="/admin/users">
-              <Icon type="appstore-o" />
+              <Icon type="contacts" />
               <span className="nav-text">Users</span>
             </Menu.Item>
-            <Menu.Item key="/admin/shops">
+            <Menu.Item key="/admin/malls">
               <Icon type="appstore-o" />
+              <span className="nav-text">Malls</span>
+            </Menu.Item>
+            <Menu.Item key="/admin/shops">
+              <Icon type="shopping-cart" />
               <span className="nav-text">Shops</span>
             </Menu.Item>
             <Menu.Item key="/admin/account">

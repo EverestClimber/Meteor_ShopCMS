@@ -22,6 +22,8 @@ import AdminUsersSinglePage from '../../ui/pages/admin/admin-user-single';
 import AdminAccountPage from '../../ui/pages/admin/admin-account';
 import AdminShopsPage from '../../ui/pages/admin/admin-shops';
 import AdminAddShopPage from '../../ui/pages/admin/admin-add-shop';
+import AdminMalls from '../../ui/pages/admin/admin-malls';
+import AdminShopSinglePage from '../../ui/pages/admin/admin-shop-single';
 
 // THEME
 import enUS from 'antd/lib/locale-provider/en_US';
@@ -46,13 +48,15 @@ const AppRoutes = () => {
       </Route>
 
       {/*ADMIN AREA*/}
-      <Route path="/admin" component={ AdminLayout }>
+      <Route path="/admin" breadcrumbName='Admin' component={ AdminLayout }>
         <IndexRoute name="index" component={ AdminHomePage } />
-        <Route path="/admin/users" component={ AdminUsersPage }  />
-        <Route path="/admin/shops" component={ AdminShopsPage }  />
-        <Route path="/admin/shops/create" component={ AdminAddShopPage }  />
+        <Route path="/admin/users" breadcrumbName='Users' component={ AdminUsersPage }  />
+        <Route path="/admin/malls" breadcrumbName='Malls' component={ AdminMalls }  />
+        <Route path="shops" breadcrumbName='Shops' component={ AdminShopsPage }>
+          <Route path=":_id" breadcrumbName='Shop Detail' component={ AdminShopSinglePage } />
+        </Route>
         <Route path="/admin/users/:_id" component={ AdminUsersSinglePage }  />
-        <Route path="/admin/account" component={ AdminAccountPage }  />
+        <Route path="/admin/account" breadcrumbName='Account' component={ AdminAccountPage }  />
       </Route>
 
     </Router>

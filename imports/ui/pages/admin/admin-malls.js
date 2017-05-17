@@ -4,7 +4,7 @@ import { Link, browserHistory } from 'react-router';
 //APOLLO
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
-import { FETCH_SHOPS } from '/imports/ui/apollo/queries'
+import { FETCH_MALLS } from '/imports/ui/apollo/queries'
 import { CREATE_SHOP } from '/imports/ui/apollo/mutations'
 
 // ANTD
@@ -22,12 +22,12 @@ const columns = [
 	  title: '_id',
 	  dataIndex: '_id',
 	  key: '_id',
-	  render: _id => <Link to={`/admin/shops/${_id}`}>{_id}</Link>,
+	  //render: _id => <Link to={`/admin/users/${_id}`}>{_id}</Link>,
 	},
 	{
 	  title: 'title',
 	  dataIndex: 'title',
-	  key: 'title',
+	  key: 'title'
 	},
 	{	
 	  title: 'description',
@@ -59,7 +59,7 @@ class AdminShopsTable extends React.Component {
 
 // EXPORTED COMPONENT
 // ==============================
-class AdminShopsPage extends React.Component {
+class AdminMalls extends React.Component {
 
 	state = { visible: false, loadingSubmit: false, errors: [] }
 
@@ -94,13 +94,15 @@ class AdminShopsPage extends React.Component {
 	saveFormRef = (form) => {
 	this.form = form;
 	}
-	renderContent() {
 
+	render(){
 		const { loading, shops } = this.props.data;
+
+		if (loading) { return <div>Loading...</div>; }
 
 		return (
 			<div>
-				<Button type="primary" onClick={this.showModal}>+ Add Shop</Button>
+				{/*<Button type="primary" onClick={this.showModal}>+ Add Shop</Button>
 				<AddShopForm
 					ref={this.saveFormRef}
 					visible={this.state.visible}
@@ -108,21 +110,10 @@ class AdminShopsPage extends React.Component {
 					onCreate={this.handleCreate}
 					loadingSubmit={this.state.loadingSubmit}
 					{...this.props}
-				/>
+				/>*/}
 				<Row>
 					<AdminShopsTable shops={shops} />
 				</Row>
-			</div>
-		);
-	}
-	render(){
-		const { children, data } = this.props;
-
-		if (data.loading) { return <div>Loading...</div>; }
-
-		return (
-			<div>
-				{children ? children : this.renderContent()}
 			</div>
 		);
 	}
@@ -132,6 +123,6 @@ class AdminShopsPage extends React.Component {
 // EXPORT
 // ==============================
 export default graphql(CREATE_SHOP)(
-	graphql(FETCH_SHOPS)(AdminShopsPage)
+	graphql(FETCH_MALLS)(AdminMalls)
 );
 
