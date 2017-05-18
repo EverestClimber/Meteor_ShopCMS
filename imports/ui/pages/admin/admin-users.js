@@ -39,13 +39,13 @@ class AdminUsersTable extends React.Component {
 
 class AdminUsersPage extends React.Component {
 	render(){
-		const { loading, users } = this.props.data;
+		const { data, children } = this.props;
 
-		if (loading) { return <div>Loading...</div>; }
+		if (data.loading) { return <div>Loading...</div>; }
 
 		return (
 			<div>
-				<AdminUsersTable users={users} />
+				{children ? children : <AdminUsersTable users={data.users} />}
 			</div>
 		);
 	}

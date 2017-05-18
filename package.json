@@ -53,6 +53,7 @@
     "react-apollo": "^1.0.0-rc.3",
     "react-dom": "^15.4.2",
     "react-geosuggest": "^2.1.0",
+    "react-html-email": "^1.2.0",
     "react-router": "^2.5.2",
     "redux": "^3.6.0",
     "subscriptions-transport-ws": "^0.5.5",

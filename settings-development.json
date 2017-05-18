@@ -8,6 +8,7 @@
 	},
 	"AWSAccessKeyId": "AKIAJMIQXUNQZAUFNOXA",
   	"AWSSecretAccessKey": "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",
+  	"mailgun": "smtp://postmaster@mg.anthonycomito.com:b19a62b9b85e99db5ecd47283cbbf3c5@smtp.mailgun.org:587",
   	"public":{
 		"config": {
 			"appName": "TrueLife",
