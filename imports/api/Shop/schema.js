@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Shops } from './model';
 import { createError } from 'apollo-errors';
-import { buildShop } from '../api-helpers';
+import { buildShop, getShopSearchResults } from '../api-helpers';
 
 
 const FooError = createError('FooError', {
@@ -11,37 +11,8 @@ const FooError = createError('FooError', {
 });
 
 
-const getShopSearchResults = async (root, args, context) => {
-	
-	return new Promise(
-	    (resolve, reject) => {
-
-	    	let options = { limit: 10, sort: { createdAt: -1 } }
-			if (args && args.offset) { options.skip = args.offset }
-			if (!args || !args.string) {
-				let shops = Shops.find({}, options).fetch();
-				resolve(shops)
-			}
-			let regex = new RegExp( args.string, 'i' );
-			let query = { $or: [
-					{ title: regex },
-					{ description: regex },
-					{ category: regex },
-					{ 'location.fullAddress': regex },
-					{ 'location.city': regex },
-					{ 'location.country': regex },
-					{ 'location.street': regex }
-				]
-			}
-	    	let shops = Shops.find(query, options).fetch();
-	    	resolve(shops)
-	    }
-	)
-};
-
 
 export const ShopSchema = [`
-
 
 type Shop {
 	    _id: ID!
@@ -67,7 +38,14 @@ type Shop {
 type Query {
 	    shopById(_id: ID!): Shop,
 	    shopsByOwner(string: String, offset: Int): [Shop],
-    	shops(string: String, offset: Int): [Shop],
+    	shops(
+    		string: String, 
+    		offset: Int,
+    		categories: [String],
+    		nearMe: Boolean
+    		latitude: String
+	  		longitude: String
+    	): [Shop],
 	  }
 
 type Mutation {
@@ -133,7 +111,6 @@ export const ShopResolvers = {
 			// TODO: check if record already exists
 			//	check by a regex on title AND a query for lat/lng (maybe within X miles)
 			let shop = await buildShop(args, context.user)
-			console.log(shop)
 			let docId = Shops.insert(shop);
 			if (docId) {
 				return Shops.findOne({_id: docId});

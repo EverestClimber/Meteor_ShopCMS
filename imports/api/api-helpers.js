@@ -1,6 +1,67 @@
 import geocoder from 'geocoder';
 import { Email } from 'meteor/email';
 import { appConfig } from '../modules/config';
+import { Shops } from './Shop/model';
+
+export const getShopSearchResults = async (root, args, context) => {
+	
+	return new Promise(
+	    (resolve, reject) => {
+	    	let query = {};
+	    	let categoryQuery;
+			let orSearchQuery;
+			let regex;
+	    	let options = { limit: 10, sort: { createdAt: -1 } }
+
+			if (args && args.offset) { options.skip = args.offset }
+
+			// if no arguments were passed, just return all shops
+			if (!args) {
+				let shops = Shops.find(query, options).fetch();
+				return resolve(shops)
+			}
+			
+			
+			// if a categories argument was passed but not search string, 
+			// just build a query to search categories
+			if (args.categories && args.categories.length > 0) {
+				categoryQuery = { category: { $in: args.categories } }
+				query = { $and: [ categoryQuery ] }
+			}
+
+			// if a categories argument was passed AND a search string was also passed, 
+			// then build a query to search categories AND regex search by string
+			// query must match a category AND at least one field being text searched
+			if (args.categories && args.categories.length > 0 && args.string) {
+				regex = new RegExp( args.string, 'i' );
+				orSearchQuery = { $or: [ 
+					{ title: regex }, 
+					{ description: regex },
+					{ 'location.fullAddress': regex },
+					{ 'location.city': regex },
+					{ 'location.country': regex },
+					{ 'location.street': regex }
+				]};
+				query = { $and: [ categoryQuery, orSearchQuery] }
+			}
+
+			if (args.categories && args.categories.length > 0 && args.string && args.nearMe && args.latitude && args.longitude) {
+				let locationSelector = {
+			        $near: {
+			            $geometry: { type: "Point", coordinates: [ args.latitude, args.longitude ] },
+			            $maxDistance: 300000,
+			            $minDistance: 0
+			        }
+			    };
+				let geoQuery = { 'location.geometry': locationSelector } 
+				query = { $and: [ categoryQuery, orSearchQuery, geoQuery ] }
+			}
+
+	    	let shops = Shops.find(query, options).fetch();
+	    	resolve(shops)
+	    }
+	)
+};
 
 
 export const getLocation = (latitude, longitude) => {
