@@ -8,6 +8,7 @@ const FooError = createError('FooError', {
   message: 'A foo error has occurred'
 });
 
+
 export const AttachmentSchema = [`
 
 type Attachment {

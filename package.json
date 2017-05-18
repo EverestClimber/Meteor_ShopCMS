@@ -6,7 +6,8 @@
     "lint": "eslint --quiet --ext .js,.jsx .",
     "prettier": "prettier --write \"client/**/*.js\" \"imports/**/*.js\" \"server/**/*.js\" --single-quote=true --trailing-comma=es5 --print-width=100",
     "test": "npm run lint",
-    "staging": "DEPLOY_HOSTNAME=galaxy.meteor.com meteor deploy truelife.meteorapp.com --settings settings-development.json"
+    "dev-staging": "DEPLOY_HOSTNAME=galaxy.meteor.com meteor deploy truelife.meteorapp.com --settings settings-dev.json",
+    "staging": "DEPLOY_HOSTNAME=galaxy.meteor.com meteor deploy truelife-dev.meteorapp.com --settings settings-development.json"
   },
   "postcss": {
     "plugins": {
@@ -52,6 +53,7 @@
     "react-apollo": "^1.0.0-rc.3",
     "react-dom": "^15.4.2",
     "react-geosuggest": "^2.1.0",
+    "react-html-email": "^1.2.0",
     "react-router": "^2.5.2",
     "redux": "^3.6.0",
     "subscriptions-transport-ws": "^0.5.5",

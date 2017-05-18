@@ -62,7 +62,7 @@ class AdminLayout extends React.Component {
     });
   }
   handleClick(e) {
-    if (e.key === 'logout') { return handleLogout(this.props); }
+    if (e.key === 'logout') { return handleLogout(this.props.client, this); }
     browserHistory.push(e.key);
     this.setState({ current: e.key });
     return;  

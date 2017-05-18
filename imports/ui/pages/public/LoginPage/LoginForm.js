@@ -1,5 +1,6 @@
 import React from 'react';
 import { withApollo } from 'react-apollo';
+import { Link } from 'react-router';
 //antd
 import Form from 'antd/lib/form';
 import Input from 'antd/lib/input';
@@ -61,6 +62,7 @@ class FormComponent extends React.Component {
 	          <Button loading={this.state.loading} type="primary" htmlType="submit" className='onboarding-btn'>
 	           	Login
 	          </Button>
+	          <Link to='/forgot-password'>Forgot your password?</Link>
 	      </Form>
 	    </Card>
   		<FormErrorArea errors={this.state.errors} />

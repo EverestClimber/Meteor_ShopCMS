@@ -4,9 +4,9 @@ A simple kit to start experimenting with Apollo, Meteor and React.
 
 ### Includes
 - GraphQL server running with Express bound to the Meteor app
-- Apollo client
-- React
-- Antd [react components](https://ant.design/components/layout/)
+- [Apollo client](http://dev.apollodata.com/)
+- [React](https://facebook.github.io/react/)
+- [Antd react components](https://ant.design/components/layout/)
 - Accounts UI, Basic & password (via [meteor-apollo-accounts](https://github.com/orionsoft/meteor-apollo-accounts))
 - ES6 syntax
 - React-Router (currently pre-v4)

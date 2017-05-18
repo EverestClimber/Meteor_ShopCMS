@@ -1,7 +1,6 @@
 import { Random } from 'meteor/random';
 import { SchemaMutations, SchemaTypes, userId } from 'meteor-apollo-accounts';
 import { Meteor } from 'meteor/meteor';
-import { Documents } from '../Document/model'
 import { check } from 'meteor/check';
 
 export const UserSchema = [`
@@ -31,7 +30,6 @@ type User {
   _id: String
   profile: Profile
   roles: [String]
-  documents: [Document]
 }
 
 type Query {
@@ -92,9 +90,6 @@ export const UserResolvers = {
     _id: ({ _id }) => _id,
     emails: ({ emails }) => emails,
     roles: ({ roles }) => roles,
-    documents: ({ _id }) => {
-      return Documents.find({ownerId: _id}).fetch()
-    }
   },
 };
 
