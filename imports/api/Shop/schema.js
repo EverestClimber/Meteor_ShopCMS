@@ -46,6 +46,14 @@ type Query {
     		latitude: String
 	  		longitude: String
     	): [Shop],
+    	shopExists(
+    		string: String, 
+    		offset: Int,
+    		categories: [String],
+    		nearMe: Boolean
+    		latitude: String
+	  		longitude: String
+    	): [Shop],
 	  }
 
 type Mutation {
@@ -92,6 +100,14 @@ export const ShopResolvers = {
 	    	return Shops.find(query, options).fetch(); // then return the given query
 	    },
 	    shops: async (root, args, context) => {
+	    	let shopsToReturn = await getShopSearchResults(root, args, context);
+	    	return shopsToReturn
+	    },
+	    shopExists: async (root, args, context) => {
+	    	// if there are no arguments passed from the AddShopForm, then do not return any possible matches
+	    	if (!args || (!args.string && (!args.categories || args.categories.length === 0 ) && !args.nearMe && !args.latitude && !args.longitude) ) {
+				return []
+			}
 	    	let shopsToReturn = await getShopSearchResults(root, args, context);
 	    	return shopsToReturn
 	    },
