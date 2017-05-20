@@ -1,6 +1,6 @@
 import { Mongo } from 'meteor/mongo';
 import { SimpleSchema } from 'meteor/aldeed:simple-schema';
-import { baseModel, addressSchema} from '../base-model';
+import { baseModel } from '../base-model';
 
 //declare collection name and export it
 export const Shops = new Mongo.Collection('Shops');
@@ -20,6 +20,59 @@ Shops.deny({
   remove: () => true,
 });
 
+
+
+export const addressSchema = new SimpleSchema({
+    fullAddress: {
+        type: String,
+        optional: true
+    },
+    lat: {
+        type: Number,
+        decimal: true,
+        optional: true
+    },
+    lng: {
+        type: Number,
+        decimal: true,
+        optional: true
+    },
+    geometry: {
+        type: Object,
+        blackbox: true,
+        optional: true
+    },
+    placeId: {
+        type: String,
+        optional: true
+    },
+    street: {
+        type: String,
+        max: 100,
+        optional: true
+    },
+    city: {
+        type: String,
+        max: 50,
+        optional: true
+    },
+    state: {
+        type: String,
+        optional: true
+    },
+    zip: {
+        type: String,
+        optional: true
+    },
+    country: {
+        type: String,
+        optional: true
+    },
+    maps_url: {
+        type: String,
+        optional: true
+    },
+});
 
 Shops.schema = new SimpleSchema({
   title: {
@@ -109,4 +162,9 @@ Shops.schema = new SimpleSchema({
 Shops.attachSchema(Shops.schema);
 Shops.attachSchema(Shops.baseModel);
 // INDEXES
-Shops._ensureIndex({'location.coordinates':'2dsphere'});  
+Meteor.startup(function() {
+  if (Meteor.isServer) {
+    Shops._ensureIndex({"location.geometry": "2dsphere"});
+  }
+});
+

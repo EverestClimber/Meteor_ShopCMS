@@ -8,33 +8,30 @@ export const getShopSearchResults = async (root, args, context) => {
 	return new Promise(
 	    (resolve, reject) => {
 	    	let query = {};
-	    	let categoryQuery;
-			let orSearchQuery;
-			let regex;
+			let andQueryArray = [];
 	    	let options = { limit: 10, sort: { createdAt: -1 } }
 
+	    	// If an offset arguement is passed, add it as an option. 
+	    	// offset is used for pagination/infinite loading if it ever gets added.
 			if (args && args.offset) { options.skip = args.offset }
 
 			// if no arguments were passed, just return all shops
-			if (!args) {
+			if (!args || (!args.string && (!args.categories || args.categories.length === 0 ) && !args.nearMe && !args.latitude && !args.longitude) ) {
 				let shops = Shops.find(query, options).fetch();
 				return resolve(shops)
 			}
 			
-			
-			// if a categories argument was passed but not search string, 
-			// just build a query to search categories
+			// if a categories argument was passed add it to the andQueryArray
+			// to be used in the $and query
 			if (args.categories && args.categories.length > 0) {
-				categoryQuery = { category: { $in: args.categories } }
-				query = { $and: [ categoryQuery ] }
+				let categoryQuery = { category: { $in: args.categories } }
+				andQueryArray.push(categoryQuery)
 			}
 
-			// if a categories argument was passed AND a search string was also passed, 
-			// then build a query to search categories AND regex search by string
-			// query must match a category AND at least one field being text searched
-			if (args.categories && args.categories.length > 0 && args.string) {
-				regex = new RegExp( args.string, 'i' );
-				orSearchQuery = { $or: [ 
+			// If a search string was passed, then add search terms to the andQueryArray
+			if (args.string) {
+				let regex = new RegExp( args.string, 'i' );
+				let orSearchQuery = { $or: [ 
 					{ title: regex }, 
 					{ description: regex },
 					{ 'location.fullAddress': regex },
@@ -42,21 +39,30 @@ export const getShopSearchResults = async (root, args, context) => {
 					{ 'location.country': regex },
 					{ 'location.street': regex }
 				]};
-				query = { $and: [ categoryQuery, orSearchQuery] }
+				andQueryArray.push(orSearchQuery)
 			}
 
-			if (args.categories && args.categories.length > 0 && args.string && args.nearMe && args.latitude && args.longitude) {
+			// If nearMe is marked true, and you were passed the lat/lng for the user,
+			// then add a geo $near query to the andQueryArray
+			if (args.nearMe && args.latitude && args.longitude) {
 				let locationSelector = {
 			        $near: {
-			            $geometry: { type: "Point", coordinates: [ args.latitude, args.longitude ] },
+			            $geometry: { 
+			            	type: "Point", 
+			            	coordinates: [ parseFloat(args.longitude), parseFloat(args.latitude) ] 
+			            },
 			            $maxDistance: 300000,
 			            $minDistance: 0
 			        }
 			    };
-				let geoQuery = { 'location.geometry': locationSelector } 
-				query = { $and: [ categoryQuery, orSearchQuery, geoQuery ] }
+				let geoQuery = { 'location.geometry': locationSelector }
+				console.log(geoQuery)
+				andQueryArray.push(geoQuery)
 			}
 
+			query = { $and: andQueryArray }
+			console.log(args)
+			console.log(andQueryArray)
 	    	let shops = Shops.find(query, options).fetch();
 	    	resolve(shops)
 	    }
@@ -68,20 +74,24 @@ export const getLocation = (latitude, longitude) => {
 	let location = {};
 	return new Promise(
 	    (resolve, reject) => { // fat arrow
-	    	geocoder.reverseGeocode( latitude, longitude, function ( err, response ) {
+	    	geocoder.reverseGeocode( latitude, longitude, function ( err, { results } ) {
 			  // do something with data
+			 
 			  location = {
-		          fullAddress: response.results[0].formatted_address,
-		          lat: latitude,
-		          lng: longitude,
-		          geometry: response.results[0].geometry,
-		          placeId: response.results[0].place_id,
-		          street_number: response.results[0].address_components[0].short_name,
-		          street: response.results[0].address_components[1].short_name,
-		          city: response.results[0].address_components[3].short_name,
+		          fullAddress: results[0] && results[0].formatted_address || '',
+		          lat: parseFloat(latitude),
+		          lng: parseFloat(longitude),
+		          geometry: {
+		          	type: 'Point',
+		          	coordinates: [ parseFloat(longitude), parseFloat(latitude)]
+		          }, // results[0] && results[0].geometry || ''
+		          placeId: results[0] && results[0].place_id || '',
+		          street_number: results[0] && results[0].address_components[0].short_name || '',
+		          street: results[0] && results[0].address_components[1].short_name || '',
+		          city: results[0] && results[0].address_components[3].short_name || '',
 		          //state: response.results[0].address_components[5].short_name,
 		          //zip: response.results[0].address_components[7].short_name,
-		          country: response.results[0].address_components[6].short_name,
+		          country: results[0] && results[0].address_components[6].short_name || '',
 		          //maps_url: data.location.maps_url,
 		        }
 			  resolve(location)
@@ -99,7 +109,7 @@ export const buildShop = async (args, user) => {
 	if (args.latitude && args.longitude) {
 		location = await getLocation(args.latitude, args.longitude);
 	}
-	
+	console.log(location)
 	return new Promise(
 	    (resolve, reject) => { // fat arrow
 	    	let report = {
