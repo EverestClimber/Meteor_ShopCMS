@@ -61,30 +61,36 @@ type Query {
 	  }
 
 type Mutation {
-	  # creates a new document 
-	  # title is the document title
-	  # content is the document content
-	  createShop(
-	  	title: String!, 
-	  	description: String!
-	  	category: String!
-	  	image: String
-	  	latitude: String
-	  	longitude: String
-	  	location: LocationData
-	  	mallId: String
-	  	phone: String
-	  	phone2: String
-	  	website: String
-	  	email: String
-	  	instagram: String
-	  	facebook: String
-	  	twitter: String
-	  	youtube: String
-	  	contactName: String
-	  	openDays: [String]
-	  ): Shop
-	}
+	# deletes a shop 
+	# shopId the unique id of the shop 
+	deleteShop(shopId: ID!): Shop
+
+	# creates a new shop 
+	# title is the shopId title
+	# description is the shop content
+	# category is the category of the shops content
+	# image is the main image for he shop
+	createShop(
+		title: String!, 
+		description: String!
+		category: String!
+		image: String
+		latitude: String
+		longitude: String
+		location: LocationData
+		mallId: String
+		phone: String
+		phone2: String
+		website: String
+		email: String
+		instagram: String
+		facebook: String
+		twitter: String
+		youtube: String
+		contactName: String
+		openDays: [String]
+	): Shop
+}
 
 `];
 
@@ -141,6 +147,26 @@ export const ShopResolvers = {
 			if (docId) {
 				return Shops.findOne({_id: docId});
 			}
+
+		},
+		async deleteShop(root, { shopId }, context) {
+			if (!context.user) {
+				throw new FooError({ data: { authentication: 'you must sign in first' } });
+			}
+
+			let shop = Shops.findOne({_id: shopId});
+
+			if (!shop) {
+				throw new FooError({ data: { authentication: 'shop does not exist!' } });
+			}
+			if ((context.user._id !== shop.ownerId) && !context.user.roles.includes('admin')) {
+				throw new FooError({ data: { authentication: 'you must be the owner or an admin to delete this record!' } });
+			}
+			// TODO: check if record already exists
+			//	check by a regex on title AND a query for lat/lng (maybe within X miles)
+			Shops.remove({_id: shopId}, {}, (err, response) => {
+				return shopId;
+			});
 
 		},
 	}

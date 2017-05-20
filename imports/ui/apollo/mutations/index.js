@@ -2,6 +2,14 @@ import gql from 'graphql-tag';
 
 
 
+export const DELETE_SHOP = gql`
+	mutation DeleteShop ($shopId:ID!) {
+	  deleteShop(shopId:$shopId) {
+	    _id
+	  }
+	}
+`
+
 export const ADD_ATTACHMENTS = gql`
 	mutation AddAttachments(
 	  	$images: [ImageObject], 
