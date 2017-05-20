@@ -61,8 +61,6 @@ export const getShopSearchResults = async (root, args, context) => {
 			}
 
 			query = { $and: andQueryArray }
-			console.log(args)
-			console.log(andQueryArray)
 	    	let shops = Shops.find(query, options).fetch();
 	    	resolve(shops)
 	    }
@@ -84,7 +82,7 @@ export const getLocation = (latitude, longitude) => {
 		          geometry: {
 		          	type: 'Point',
 		          	coordinates: [ parseFloat(longitude), parseFloat(latitude)]
-		          }, // results[0] && results[0].geometry || ''
+		          },
 		          placeId: results[0] && results[0].place_id || '',
 		          street_number: results[0] && results[0].address_components[0].short_name || '',
 		          street: results[0] && results[0].address_components[1].short_name || '',
@@ -92,7 +90,7 @@ export const getLocation = (latitude, longitude) => {
 		          //state: response.results[0].address_components[5].short_name,
 		          //zip: response.results[0].address_components[7].short_name,
 		          country: results[0] && results[0].address_components[6].short_name || '',
-		          //maps_url: data.location.maps_url,
+		          maps_url: data.location && data.location.maps_url && data.location.maps_url || '',
 		        }
 			  resolve(location)
 			});
@@ -109,7 +107,7 @@ export const buildShop = async (args, user) => {
 	if (args.latitude && args.longitude) {
 		location = await getLocation(args.latitude, args.longitude);
 	}
-	console.log(location)
+
 	return new Promise(
 	    (resolve, reject) => { // fat arrow
 	    	let report = {
