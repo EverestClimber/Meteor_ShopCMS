@@ -32,7 +32,7 @@ export const AdminMenu = ({handleClick, location}) => {
               <span className="nav-text">Home</span>
             </Menu.Item>
             <Menu.Item key="/admin/users">
-              <Icon type="contacts" />
+              <Icon type="team" />
               <span className="nav-text">Users</span>
             </Menu.Item>
             <Menu.Item key="/admin/malls">

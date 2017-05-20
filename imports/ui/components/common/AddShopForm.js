@@ -2,6 +2,8 @@ import React from 'react';
 import { Random } from 'meteor/random'
 //antd
 import Form from 'antd/lib/form';
+import Row from 'antd/lib/row';
+import Col from 'antd/lib/col';
 import Input from 'antd/lib/input';
 import Radio from 'antd/lib/radio';
 import Button from 'antd/lib/button';
@@ -13,7 +15,8 @@ import { SingleImageUpload } from './SingleImageUpload'
 import Geosuggest from 'react-geosuggest';
 import { CATEGORY_OPTIONS } from '/imports/modules/helpers'
 import { MultipleImageUpload } from './MultipleImageUpload'
-
+import CountryInput from './CountryInput'
+import StateInput from './StateInput'
 
 // CONSTANTS & DESCTRUCTURING
 // ========================================
@@ -69,7 +72,7 @@ class AddShop extends React.Component {
   render(){
       const { visible, onCancel, onCreate, form, loadingSubmit } = this.props;
       const { getFieldDecorator } = form;
-      const { latitude,  longitude, image, imageList } = this.state;
+      const { latitude, longitude, image, imageList } = this.state;
     return (
       <Modal
         visible={visible}
@@ -88,16 +91,16 @@ class AddShop extends React.Component {
         )}
       >
         <Form layout="vertical">
+        <h3>Main Image</h3>
         <SingleImageUpload onSuccessfulUpload={(image) => this.setState({ image })} />
+        <h3>General Info</h3>
           <FormItem label="title">
-            {getFieldDecorator('title')(<Input type="title" />)}
+            {getFieldDecorator('title')(<Input placeholder="title of this shop...." />)}
           </FormItem>
-          <Geosuggest 
-            onSuggestSelect={({location}) => this.setState({latitude: location.lat, longitude: location.lng})} 
-          />
           <FormItem label="description">
-            {getFieldDecorator('description')(<Input type="description" />)}
+            {getFieldDecorator('description')(<Input type="textarea" rows={4}  placeholder="about this shop..." />)}
           </FormItem>
+
             <FormItem label="Category">
             {getFieldDecorator('category', {
               rules: [{ required: true, message: 'Please input your Report Type!' }],
@@ -107,6 +110,38 @@ class AddShop extends React.Component {
               </Select>
             )}
           </FormItem>
+          <h3>Location</h3>
+          <Row gutter={15}>
+             <Col xs={12}>
+              <FormItem label="street1">
+                {getFieldDecorator('street1')(<Input placeholder="street 1...." />)}
+              </FormItem>
+            </Col>
+            <Col xs={12}>
+              <FormItem label="street2">
+                {getFieldDecorator('street2')(<Input placeholder="street2...." />)}
+              </FormItem>
+            </Col>
+            <Col xs={12}>
+              <FormItem label="suburb">
+                {getFieldDecorator('suburb')(<Input placeholder="suburb...." />)}
+              </FormItem>
+            </Col>
+            <Col xs={12}>
+              <StateInput getFieldDecorator={getFieldDecorator} />
+            </Col>
+            <Col xs={12}>
+              <FormItem label="postal code">
+                {getFieldDecorator('postal')(<Input placeholder="postal code...." />)}
+              </FormItem>
+            </Col>
+            <Col xs={12}>
+              <CountryInput getFieldDecorator={getFieldDecorator} />
+            </Col>
+          </Row>
+          
+          
+          
           <MultipleImageUpload 
             imageList={this.state.imageList}
             onSuccessfulImgUpload={this.onSuccessfulImgUpload}

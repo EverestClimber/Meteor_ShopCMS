@@ -142,7 +142,7 @@ class MultipleImageUpload extends React.Component {
 		return (
 			<div style={{minHeight: 200}}>
 				<hr style={{borderTop: '1px solid #efefef'}}/>
-				<h3 style={{marginBottom: 3, marginTop: 25}}>ADD PHOTOS</h3>
+				<h3 style={{marginBottom: 3, marginTop: 25}}>ADDITIONAL IMAGES</h3>
 				<h5 style={{color: '#888', marginBottom: 20}}>Upload up to 5 images</h5>
 				<PicturesWallContainer 
 					onRemoveImg={(uid)=> onRemoveImg(uid)}

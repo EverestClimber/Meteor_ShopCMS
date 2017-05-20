@@ -14,6 +14,15 @@ type Geometry {
 
 scalar Date
 
+input LocationData {
+	street1: String
+	street2: String
+	postal: String
+	country: String
+	state: String
+	suburb: String
+}
+
 input ImageObject {
 	fileType: String
 	name: String

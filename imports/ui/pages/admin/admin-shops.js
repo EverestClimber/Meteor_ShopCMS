@@ -72,10 +72,11 @@ class AdminShopsPage extends React.Component {
 	handleCreate = ({longitude, latitude, image, imageList}) => {
 		const form = this.form;
 		this.setState({loadingSubmit: true})
-		form.validateFields((err, { title, description, category }) => {
+		form.validateFields((err, { title, description, category, street1, street2, country, state, postal, suburb  }) => {
 			if (err) { return this.setState({loadingSubmit: false}); }
-			let variables = { title, description, category, image, latitude, longitude };
-
+			let variables = { 
+				title, description, category, image, /*latitude, longitude,*/ location: { street1, street2, country, state, postal, suburb } 
+			};
 			this.props.createShop({ variables })
 				.then((res) => {
 					if (!imageList || imageList.length === 0) {

@@ -16,6 +16,7 @@ const FooError = createError('FooError', {
 
 export const ShopSchema = [`
 
+
 type Shop {
 	    _id: ID!
 	    title: String!, 
@@ -70,6 +71,7 @@ type Mutation {
 	  	image: String
 	  	latitude: String
 	  	longitude: String
+	  	location: LocationData
 	  	mallId: String
 	  	phone: String
 	  	phone2: String

@@ -26,6 +26,7 @@ export const CREATE_SHOP = gql`
 	  $image: String
 	  $longitude:String
 	  $latitude: String
+	  $location: LocationData
 	){
 	  createShop(
 	    title: $title
@@ -34,6 +35,7 @@ export const CREATE_SHOP = gql`
 	    image: $image
 	    longitude: $longitude
 	    latitude: $latitude
+	    location: $location
 	  ){
 	    _id
 	    owner {

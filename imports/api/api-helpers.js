@@ -68,7 +68,7 @@ export const getShopSearchResults = async (root, args, context) => {
 };
 
 
-export const getLocation = (latitude, longitude) => {
+export const getLocationFromCoords = (latitude, longitude) => {
 	let location = {};
 	return new Promise(
 	    (resolve, reject) => { // fat arrow
@@ -99,14 +99,51 @@ export const getLocation = (latitude, longitude) => {
 	)
 }
 
+export const getLocationFromAddress = (locationArgs) => {
+	let location = {};
+	let stringToGeocode = `${locationArgs.street1 || ''} ${locationArgs.street2 || ''} ${locationArgs.suburb || ''} ${locationArgs.postal || ''} ${locationArgs.state || ''} ${locationArgs.country || ''}`
+	return new Promise(
+	    (resolve, reject) => { // fat arrow
+	    	geocoder.geocode( stringToGeocode, function ( err, { results } ) {
+			  // do something with data
+			 console.log(results[0])
+			  location = {
+		          fullAddress: results[0] && results[0].formatted_address || '',
+		          lat: results[0].geometry.location.lat, //parseFloat(latitude),
+		          lng: results[0].geometry.location.lng, //parseFloat(longitude),
+		          geometry: {
+		          	type: 'Point',
+		          	coordinates: [ results[0].geometry.location.lng, results[0].geometry.location.lat]
+		          },
+		          placeId: results[0] && results[0].place_id || '',
+		          street_number: results[0] && results[0].address_components[0].short_name || '',
+		          street: results[0] && results[0].address_components[1].short_name || '',
+		          city: results[0] && results[0].address_components[3].short_name || '',
+		          //state: response.results[0].address_components[5].short_name,
+		          //zip: response.results[0].address_components[7].short_name,
+		          country: results[0] && results[0].address_components[6].short_name || '',
+		          //maps_url: results.location && results.location.maps_url && results.location.maps_url || '',
+		        }
+			  resolve(location)
+			});
+	    	
+	    }
+	)
+}
+
 
 export const buildShop = async (args, user) => {
 
 	let location;
 
 	if (args.latitude && args.longitude) {
-		location = await getLocation(args.latitude, args.longitude);
+		location = await getLocationFromCoords(args.latitude, args.longitude);
 	}
+
+	if (!args.latitude && !args.longitude && args.location) {
+		location = await getLocationFromAddress(args.location);
+	}
+
 
 	return new Promise(
 	    (resolve, reject) => { // fat arrow

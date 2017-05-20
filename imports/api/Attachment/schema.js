@@ -78,7 +78,7 @@ export const AttachmentResolvers = {
 				}
 				return image
 			});
-			console.log(imagesToInsert)
+			
 			imagesToInsert.forEach( imageDoc => {
 				Attachments.insert(imageDoc)
 			});
