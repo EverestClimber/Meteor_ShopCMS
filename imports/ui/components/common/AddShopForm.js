@@ -1,4 +1,5 @@
 import React from 'react';
+import { Random } from 'meteor/random'
 //antd
 import Form from 'antd/lib/form';
 import Input from 'antd/lib/input';
@@ -10,32 +11,27 @@ import Select from 'antd/lib/select';
 //import { getWatchgroupOptions, PRIORITY_LEVEL, REPORT_TYPE } from '../../../modules/helpers'
 import { SingleImageUpload } from './SingleImageUpload'
 import Geosuggest from 'react-geosuggest';
- 
+import { CATEGORY_OPTIONS } from '/imports/modules/helpers'
+import { MultipleImageUpload } from './MultipleImageUpload'
 
-const CATEGORY_OPTIONS = [
-  { label: 'food', value: 'food'},
-  { label: 'clothing', value: 'clothing'},
-  { label: 'electronics', value: 'electronics'}
-];
 
-/*const buildReport = (args) => {
-  let report = {
-    watchgroupId: args.watchgroupId,
-    messageValue: args.messageValue,
-    reportType: args.reportType,
-    priorityLevel: args.priorityLevel,
-    modelType: args.modelType,
-  }
-  return report;
-}*/
-
+// CONSTANTS & DESCTRUCTURING
+// ========================================
 const FormItem = Form.Item;
 const Option = Select.Option;
 
 
+// EXPORTED COMPONENT
+// ========================================
 class AddShop extends React.Component {
 
-  state = { latitude: null, longitude: null, location: null, image: null };
+  state = { 
+    latitude: null, 
+    longitude: null, 
+    location: null, 
+    image: null,
+    imageList: []
+  };
 
   componentWillUnmount(){
     this.geoLoc.clearWatch(this.watchID);
@@ -53,10 +49,27 @@ class AddShop extends React.Component {
   onSuccessfulUpload = (image) => {
     this.setState({ image });
   }
+  onSuccessfulImgUpload = (value) => {
+    
+    let imageToInsert = {
+            uid: Random.id(),
+            name: value.name,
+            fileType: value.fileType,
+            url: value.url,
+          }
+    let currentImageList = this.state.imageList;
+    currentImageList.push(imageToInsert)
+    this.setState({imageList: currentImageList});
+  }
+  onRemoveImg = (uid) => {
+    let currentImageList = this.state.imageList;
+    currentImageList = currentImageList.filter(item => item.uid !== uid);
+    this.setState({imageList: currentImageList});
+  }
   render(){
       const { visible, onCancel, onCreate, form, loadingSubmit } = this.props;
       const { getFieldDecorator } = form;
-      const { latitude,  longitude, image } = this.state;
+      const { latitude,  longitude, image, imageList } = this.state;
     return (
       <Modal
         visible={visible}
@@ -66,7 +79,7 @@ class AddShop extends React.Component {
           <div>
             <Button 
               loading={loadingSubmit} 
-              onClick={()=>onCreate({ latitude, longitude, image })} 
+              onClick={()=>onCreate({ latitude, longitude, image, imageList })} 
               type="primary"
             >
               + Add Shop
@@ -94,12 +107,21 @@ class AddShop extends React.Component {
               </Select>
             )}
           </FormItem>
+          <MultipleImageUpload 
+            imageList={this.state.imageList}
+            onSuccessfulImgUpload={this.onSuccessfulImgUpload}
+            onRemoveImg={this.onRemoveImg}
+          />
         </Form>
       </Modal>
     );
   }
 }
 
+// WRAP IN HOC FORM CREATOR
+// ========================================
 const AddShopForm = Form.create()(AddShop);
 
+// EXPORT
+// ========================================
 export { AddShopForm };

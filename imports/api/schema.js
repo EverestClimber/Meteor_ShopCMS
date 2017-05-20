@@ -14,6 +14,13 @@ type Geometry {
 
 scalar Date
 
+input ImageObject {
+	fileType: String
+	name: String
+	uid: String
+	url: String
+}
+
 type Address {
 	    fullAddress: String!
 	    lat: String

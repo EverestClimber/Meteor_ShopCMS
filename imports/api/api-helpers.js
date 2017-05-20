@@ -90,7 +90,7 @@ export const getLocation = (latitude, longitude) => {
 		          //state: response.results[0].address_components[5].short_name,
 		          //zip: response.results[0].address_components[7].short_name,
 		          country: results[0] && results[0].address_components[6].short_name || '',
-		          maps_url: data.location && data.location.maps_url && data.location.maps_url || '',
+		          maps_url: results.location && results.location.maps_url && results.location.maps_url || '',
 		        }
 			  resolve(location)
 			});

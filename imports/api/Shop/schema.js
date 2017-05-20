@@ -2,6 +2,8 @@ import { Random } from 'meteor/random';
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Shops } from './model';
+import { Attachments } from '../Attachment/model';
+
 import { createError } from 'apollo-errors';
 import { buildShop, getShopSearchResults } from '../api-helpers';
 
@@ -33,6 +35,7 @@ type Shop {
 	  	openDays: [String]
 	    location: Address
 	    owner: User
+	    attachments: [Attachment]
 	}
 
 type Query {
@@ -117,6 +120,11 @@ export const ShopResolvers = {
   			let user = Meteor.users.findOne({_id: ownerId});
   			if (!user) { return null }
   			return user
+  		},
+  		attachments: ({ _id }, args, context) => {
+  			let attachments = Attachments.find({ownerId: _id}).fetch();
+  			if (!attachments || attachments.length === 0) { return [] }// if attahments does not exist or length of array is 0, just return an empty array
+  			return attachments
   		}
   	},
 	Mutation: {
