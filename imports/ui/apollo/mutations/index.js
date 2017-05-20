@@ -10,6 +10,27 @@ export const DELETE_SHOP = gql`
 	}
 `
 
+export const CREATE_MALL = gql`
+	mutation CreateMall (
+	  		$title: String!, 
+		  	$description: String!
+		    $location: LocationData
+		    $shopIds: [ID]
+	) {
+	  createMall(
+	    	title: $title, 
+		  	description: $description
+		    location: $location
+		    shopIds: $shopIds
+	  ) {
+	    _id
+	  }
+	}
+`
+
+
+
+
 export const ADD_ATTACHMENTS = gql`
 	mutation AddAttachments(
 	  	$images: [ImageObject], 

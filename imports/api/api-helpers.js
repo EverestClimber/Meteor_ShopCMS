@@ -106,7 +106,6 @@ export const getLocationFromAddress = (locationArgs) => {
 	    (resolve, reject) => { // fat arrow
 	    	geocoder.geocode( stringToGeocode, function ( err, { results } ) {
 			  // do something with data
-			 console.log(results[0])
 			  location = {
 		          fullAddress: results[0] && results[0].formatted_address || '',
 		          lat: results[0].geometry.location.lat, //parseFloat(latitude),

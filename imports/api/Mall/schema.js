@@ -4,44 +4,46 @@ import { check } from 'meteor/check';
 import { Shops } from './model';
 import { Malls } from './model';
 import { createError } from 'apollo-errors';
-import { buildShop } from '../api-helpers';
-
+import { getLocationFromCoords, getLocationFromAddress } from '../api-helpers';
+import { randomColor } from 'randomcolor'
 
 const FooError = createError('FooError', {
   message: 'A foo error has occurred'
 });
 
-const buildMall = () => {
-	return {};
-}
 
-const getShopSearchResults = async (root, args, context) => {
-	
+
+const buildMall = async (root, args, context) => {
+
+	let location;
+
+	if (args.latitude && args.longitude) {
+		location = await getLocationFromCoords(args.latitude, args.longitude);
+	}
+
+	if (!args.latitude && !args.longitude && args.location) {
+		location = await getLocationFromAddress(args.location);
+	}
+
+
 	return new Promise(
-	    (resolve, reject) => {
-
-	    	let options = { limit: 10, sort: { createdAt: -1 } }
-			if (args && args.offset) { options.skip = args.offset }
-			if (!args || !args.string) {
-				let shops = Shops.find({}, options).fetch();
-				resolve(shops)
+	    (resolve, reject) => { // fat arrow
+	    	let mall = {
+			    title: args.title, 
+			  	description: args.title,
+			    location,
+			    color_id: randomColor(),
+			    numberOfStores: args.shopIds && args.shopIds.length || 0,
+			    ownerId: context.user._id,
+			    shopIds: args.shopIds || [],
 			}
-			let regex = new RegExp( args.string, 'i' );
-			let query = { $or: [
-					{ title: regex },
-					{ description: regex },
-					{ category: regex },
-					{ 'location.fullAddress': regex },
-					{ 'location.city': regex },
-					{ 'location.country': regex },
-					{ 'location.street': regex }
-				]
-			}
-	    	let shops = Shops.find(query, options).fetch();
-	    	resolve(shops)
+	    	resolve(mall)
 	    }
 	)
 };
+
+
+
 
 
 export const MallSchema = [`
@@ -71,9 +73,10 @@ type Mutation {
 	  createMall(
 	    title: String!, 
 	  	description: String!
-	  	latitude: String
-	  	longitude: String
-	  ): Shop
+	  	openDays: [String]
+	    location: LocationData
+	    shopIds: [ID]
+	  ): Mall
 	}
 
 `];
@@ -112,8 +115,7 @@ export const MallResolvers = {
 			}
 			// TODO: check if record already exists
 			//	check by a regex on title AND a query for lat/lng (maybe within X miles)
-			let mall = await buildMall(args, context.user)
-			console.log(mall)
+			let mall = await buildMall(root, args, context)
 			let docId = Malls.insert(mall);
 			if (docId) {
 				return Malls.findOne({_id: docId});

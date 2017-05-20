@@ -19,6 +19,7 @@ input LocationData {
 	street2: String
 	postal: String
 	country: String
+	city: String
 	state: String
 	suburb: String
 }

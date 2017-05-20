@@ -164,7 +164,7 @@ export const ShopResolvers = {
 			}
 			// TODO: check if record already exists
 			//	check by a regex on title AND a query for lat/lng (maybe within X miles)
-			Shops.remove({_id: shopId}, {}, (err, response) => {
+			Shops.remove({_id: shopId}, (err, response) => {
 				return shopId;
 			});
 

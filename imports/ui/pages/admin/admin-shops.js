@@ -75,7 +75,7 @@ class AdminShopsPage extends React.Component {
 		form.validateFields((err, { title, description, category, street1, street2, country, state, postal, suburb  }) => {
 			if (err) { return this.setState({loadingSubmit: false}); }
 			let variables = { 
-				title, description, category, image, /*latitude, longitude,*/ location: { street1, street2, country, state, postal, suburb } 
+				title, description, category, image, location: { street1, street2, country, state, postal, suburb } 
 			};
 			this.props.createShop({ variables })
 				.then((res) => {
