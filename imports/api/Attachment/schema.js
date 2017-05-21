@@ -1,7 +1,8 @@
 import { Random } from 'meteor/random';
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Attachment } from './model';
+import { Attachments } from './model';
+import { Shops } from '../Shop/model';
 import { createError } from 'apollo-errors';
 
 const FooError = createError('FooError', {
@@ -11,10 +12,16 @@ const FooError = createError('FooError', {
 
 export const AttachmentSchema = [`
 
+
+
 type Attachment {
 	    _id: ID!
 	    title: String
+	    url: String
+	    shopId: ID
+	    userId: ID
 	    owner: User
+	    shop: Shop
 	}
 
 type Query {
@@ -26,7 +33,11 @@ type Mutation {
 	  # creates a new document 
 	  # title is the document title
 	  # content is the document content
-	  createAttachment(title: String!, content: String!): Attachment
+	  addAttachments(
+	  	images: [ImageObject], 
+	  	shopId: ID, 
+	  	userId: ID,
+	  ): Attachment
 	}
 
 `];
@@ -38,24 +49,39 @@ export const AttachmentResolvers = {
 	    attachmentById: (root, args, context) => Attachments.findOne({ _id: args._id }),
 	    attachments: () => Attachments.find().fetch(),
   	},
-  	Shop: {
-  		owner: ({ ownerId }, args, context) => {
-  			let user = Meteor.users.findOne({_id: ownerId});
+  	Attachment: {
+  		owner: ({ userId }, args, context) => {
+  			let user = Meteor.users.findOne({_id: userId});
   			if (!user) { return null }
   			return user
+  		},
+  		shop: ({ shopId }, args, context) => {
+  			let shop = Shops.findOne({shopId: shopId});
+  			if (!shop) { return null }
+  			return shop
   		}
   	},
 	Mutation: {
-		createAttachment(root, args, context) {
+		addAttachments(root, args, context) {
 			if (!context.user) {
 				throw new FooError({ data: { authentication: 'you must sign in first' } });
 			}
-			console.log(args)
-			/*args.ownerId = context.user._id;
-			let docId = Shops.insert({...args});
-			if (docId) {
-				return Shops.findOne({_id: docId});
-			}*/
+
+			let imagesToInsert = args.images.map( item => {
+				let image = {
+					shopId: args.shopId,
+					userId: args.userId,
+					url: item.url,
+					ownerId: context.user._id,
+					name: item.name && item.name || '',
+					fileType: item.fileType && item.fileType || '',
+				}
+				return image
+			});
+			
+			imagesToInsert.forEach( imageDoc => {
+				Attachments.insert(imageDoc)
+			});
 		},
 	}
 };

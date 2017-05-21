@@ -9,11 +9,16 @@ import Radio from 'antd/lib/radio';
 import Button from 'antd/lib/button';
 import Modal from 'antd/lib/modal';
 import Select from 'antd/lib/select';
+//APOLLO
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
+import { FETCH_SHOPS } from '/imports/ui/apollo/queries'
+
 //Option
 //import { getWatchgroupOptions, PRIORITY_LEVEL, REPORT_TYPE } from '../../../modules/helpers'
 import { SingleImageUpload } from './SingleImageUpload'
 import Geosuggest from 'react-geosuggest';
-import { CATEGORY_OPTIONS } from '/imports/modules/helpers'
+import { CATEGORY_OPTIONS, selectFilterByLabel } from '/imports/modules/helpers'
 import { MultipleImageUpload } from './MultipleImageUpload'
 import CountryInput from './CountryInput'
 import StateInput from './StateInput'
@@ -26,88 +31,35 @@ const Option = Select.Option;
 
 // EXPORTED COMPONENT
 // ========================================
-class AddShop extends React.Component {
+class AddMall extends React.Component {
 
-  state = { 
-    latitude: null, 
-    longitude: null, 
-    location: null, 
-    image: null,
-    imageList: []
-  };
-
-  componentWillUnmount(){
-    this.geoLoc.clearWatch(this.watchID);
-  }
-  componentDidMount(){
-
-    let options = { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
-    let success = ({ coords }) => this.setState({latitude: coords.latitude, longitude: coords.longitude  });
-    let error = (err) => { console.warn('ERROR(' + err.code + '): ' + err.message); };
-
-    this.geoLoc = navigator.geolocation;
-    this.watchID = this.geoLoc.watchPosition(success, error, options);
-
-  }
-  onSuccessfulUpload = (image) => {
-    this.setState({ image });
-  }
-  onSuccessfulImgUpload = (value) => {
-    
-    let imageToInsert = {
-            uid: Random.id(),
-            name: value.name,
-            fileType: value.fileType,
-            url: value.url,
-          }
-    let currentImageList = this.state.imageList;
-    currentImageList.push(imageToInsert)
-    this.setState({imageList: currentImageList});
-  }
-  onRemoveImg = (uid) => {
-    let currentImageList = this.state.imageList;
-    currentImageList = currentImageList.filter(item => item.uid !== uid);
-    this.setState({imageList: currentImageList});
-  }
   render(){
       const { visible, onCancel, onCreate, form, loadingSubmit } = this.props;
       const { getFieldDecorator } = form;
-      const { latitude, longitude, image, imageList } = this.state;
     return (
       <Modal
         visible={visible}
-        title="Add a Shop"
+        title="Add a Mall"
         onCancel={onCancel}
         footer={(
           <div>
             <Button 
               loading={loadingSubmit} 
-              onClick={()=>onCreate({ latitude, longitude, image, imageList })} 
+              onClick={()=>onCreate()} 
               type="primary"
             >
-              + Add Shop
+              + Add Mall
             </Button>
           </div>
         )}
       >
         <Form layout="vertical">
-        <h3>Main Image</h3>
-        <SingleImageUpload onSuccessfulUpload={(image) => this.setState({ image })} />
         <h3>General Info</h3>
           <FormItem label="title">
             {getFieldDecorator('title')(<Input placeholder="title of this shop...." />)}
           </FormItem>
           <FormItem label="description">
-            {getFieldDecorator('description')(<Input type="textarea" rows={4}  placeholder="about this shop..." />)}
-          </FormItem>
-            <FormItem label="Category">
-            {getFieldDecorator('category', {
-              rules: [{ required: true, message: 'Please input your Report Type!' }],
-            })(
-              <Select style={{ width: '100%' }} placeholder="Please select a Report Type" >
-                {CATEGORY_OPTIONS.map( item => <Option key={item.value} value={item.label}> {item.label} </Option>)}
-              </Select>
-            )}
+            {getFieldDecorator('description')(<Input type="textarea" rows={4}  placeholder="about this mall..." />)}
           </FormItem>
           <h3>Location</h3>
           <Row gutter={15}>
@@ -138,11 +90,24 @@ class AddShop extends React.Component {
               <CountryInput getFieldDecorator={getFieldDecorator} />
             </Col>
           </Row>
-          <MultipleImageUpload 
-            imageList={this.state.imageList}
-            onSuccessfulImgUpload={this.onSuccessfulImgUpload}
-            onRemoveImg={this.onRemoveImg}
-          />
+          {!this.props.data.loading && this.props.data.shops && (
+              <FormItem label="Shops">
+              {getFieldDecorator('shopIds', {
+                rules: [{ required: true, message: 'Please input your mall!' }],
+              })(
+                <Select 
+                  showSearch 
+                  optionFilterProp="children" 
+                  filterOption={selectFilterByLabel}
+                  mode='multiple' 
+                  style={{ width: '100%' }} 
+                  placeholder="Please select shops related to this mall"
+                >
+                  {this.props.data.shops.map( item => <Option key={item._id} value={item._id}> {item.title} </Option>)}
+                </Select>
+              )}
+            </FormItem>
+          )}
         </Form>
       </Modal>
     );
@@ -151,8 +116,9 @@ class AddShop extends React.Component {
 
 // WRAP IN HOC FORM CREATOR
 // ========================================
-const AddShopForm = Form.create()(AddShop);
+const ComponentWithData = graphql(FETCH_SHOPS)(AddMall)
+const AddMallForm = Form.create()(ComponentWithData);
 
 // EXPORT
 // ========================================
-export { AddShopForm };
+export { AddMallForm };

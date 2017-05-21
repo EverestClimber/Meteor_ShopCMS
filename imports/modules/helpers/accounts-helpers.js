@@ -6,7 +6,7 @@ import { loginWithPassword, createUser, logout, onTokenChange } from 'meteor-apo
 
 
 const afterLogin = (userId, apollo, _this) => {
-  message.success('we in this bitch!'); 
+  message.success('welcome!'); 
   apollo.resetStore();
   _this.setState({ loading: false });
   return browserHistory.push('/admin');

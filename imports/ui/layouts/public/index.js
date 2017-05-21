@@ -45,20 +45,23 @@ class PublicLayout extends React.Component {
         width: window.innerWidth || documentElement.clientWidth || body.clientWidth 
       });
   }
-  /*componentWillReceiveProps(nextProps){
-    if (nextProps.data && nextProps.data.user && ApolloRoles.userIsInRole('admin', nextProps.data.user)) {
+  componentWillReceiveProps({ data }){
+    if (!data.loading && data.user && data.user.roles.includes('admin')) {
       return browserHistory.push('/admin');
     }
-  }*/
+  }
   componentDidMount() {
+    const { loading, user } = this.props.data;
+
     window.addEventListener("resize", this.updateDimensions);
+
+    if (!loading && user && user.roles && user.roles.includes('admin')) {
+      return browserHistory.push('/admin');
+    }
+    
   }
   componentWillUnmount() {
     window.removeEventListener("resize", this.updateDimensions);
-  }
-  componentWillMount(){
-    
-    
   }
   handleClick = (e) => {
 

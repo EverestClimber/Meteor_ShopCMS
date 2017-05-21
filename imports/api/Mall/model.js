@@ -39,6 +39,10 @@ Malls.schema = new SimpleSchema({
     max: 450,
     optional: true
   },
+  shopIds: {
+    type: [String],
+    optional: true
+  },
   numberOfStores: {
     type: Number,
     autoValue: function() {

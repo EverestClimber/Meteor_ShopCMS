@@ -35,6 +35,10 @@ Attachments.schema = new SimpleSchema({
     type: String,
     optional: true
   },
+  shopId: {//group is so you can group them, like on basecamp's file area
+    type: String,
+    optional: true
+  },
   fileType: {//pdf, .doc, png, etc.
     type: String,
     optional: true

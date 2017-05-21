@@ -5,7 +5,7 @@ import { Link, browserHistory } from 'react-router';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import { FETCH_SHOPS } from '/imports/ui/apollo/queries'
-import { CREATE_SHOP } from '/imports/ui/apollo/mutations'
+import { CREATE_SHOP, ADD_ATTACHMENTS } from '/imports/ui/apollo/mutations'
 
 // ANTD
 import Table from 'antd/lib/table';
@@ -29,11 +29,11 @@ const columns = [
 	  dataIndex: 'title',
 	  key: 'title',
 	},
-	{	
+	/*{	
 	  title: 'description',
 	  dataIndex: 'description',
 	  key: 'description'
-	},
+	},*/
 	{	
 	  title: 'category',
 	  dataIndex: 'category',
@@ -69,23 +69,35 @@ class AdminShopsPage extends React.Component {
 	showModal = () => {
 		this.setState({ visible: true });
 	}
-	handleCreate = ({longitude, latitude, image}) => {
+	handleCreate = ({longitude, latitude, image, imageList}) => {
 		const form = this.form;
 		this.setState({loadingSubmit: true})
-		form.validateFields((err, { title, description, category }) => {
+		form.validateFields((err, { title, description, category, street1, street2, country, state, postal, suburb  }) => {
 			if (err) { return this.setState({loadingSubmit: false}); }
-			let variables = { title, description, category, image, latitude, longitude };
-			console.log(variables);
-			this.props.mutate({ variables })
-				.then(() => {
-					this.props.data.refetch()
-					form.resetFields();
-					return this.setState({ visible: false, loadingSubmit: false });
+			let variables = { 
+				title, description, category, image, location: { street1, street2, country, state, postal, suburb } 
+			};
+			this.props.createShop({ variables })
+				.then((res) => {
+					if (!imageList || imageList.length === 0) {
+						this.props.data.refetch();
+						form.resetFields();
+						return this.setState({ visible: false, loadingSubmit: false });
+					}
+					let attachmentVariables = {
+						shopId: res.data.createShop._id,
+						userId: res.data.createShop.owner._id,
+						images: imageList
+					}
+					this.props.addAttachments({ variables: attachmentVariables }).then(()=>{
+						this.props.data.refetch();
+						form.resetFields();
+						return this.setState({ visible: false, loadingSubmit: false });
+					});
 				})
 				.catch(e => {
 					const errors = e.graphQLErrors.map( err => err.message );
 					this.setState({ visible: false, loadingSubmit: false, errors });
-					console.log('error ran');
 					return console.log(errors);
 			});
 
@@ -131,7 +143,9 @@ class AdminShopsPage extends React.Component {
 
 // EXPORT
 // ==============================
-export default graphql(CREATE_SHOP)(
-	graphql(FETCH_SHOPS)(AdminShopsPage)
+export default graphql(CREATE_SHOP, { name: 'createShop' })(
+	graphql(ADD_ATTACHMENTS, { name: 'addAttachments' })(
+		graphql(FETCH_SHOPS)(AdminShopsPage)
+	)
 );
 

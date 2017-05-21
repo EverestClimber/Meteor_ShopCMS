@@ -5,14 +5,14 @@ import { Link, browserHistory } from 'react-router';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import { FETCH_MALLS } from '/imports/ui/apollo/queries'
-import { CREATE_SHOP } from '/imports/ui/apollo/mutations'
+import { CREATE_MALL } from '/imports/ui/apollo/mutations'
 
 // ANTD
 import Table from 'antd/lib/table';
 import Button from 'antd/lib/button';
 import Row from 'antd/lib/row';
 // COMPONENTS
-import { AddShopForm } from '../../components/common';
+import { AddMallForm } from '../../components/common';
 
 
 // CONSTANTS & DESTRUCTURING
@@ -33,24 +33,19 @@ const columns = [
 	  title: 'description',
 	  dataIndex: 'description',
 	  key: 'description'
-	},
-	{	
-	  title: 'category',
-	  dataIndex: 'category',
-	  key: 'category'
-	},
+	}
 ];
 
 
 // INTERNAL COMPONENTS
 // ==============================
-class AdminShopsTable extends React.Component {
+class AdminMallsTable extends React.Component {
 	render(){
 		return (
 			<Table
 				rowKey={record => record._id}
 				columns={columns}
-				dataSource={this.props.shops}  
+				dataSource={this.props.malls}  
 			/>
 		);
 	}
@@ -69,13 +64,12 @@ class AdminMalls extends React.Component {
 	showModal = () => {
 		this.setState({ visible: true });
 	}
-	handleCreate = ({longitude, latitude, image}) => {
+	handleCreate = () => {
 		const form = this.form;
 		this.setState({loadingSubmit: true})
-		form.validateFields((err, { title, description, category }) => {
+		form.validateFields((err, { title, description, street1, street2, country, state, postal, suburb, shopIds  }) => {
 			if (err) { return this.setState({loadingSubmit: false}); }
-			let variables = { title, description, category, image, latitude, longitude };
-			console.log(variables);
+			let variables = { title, description, street1, street2, country, state, postal, suburb, shopIds };
 			this.props.mutate({ variables })
 				.then(() => {
 					this.props.data.refetch()
@@ -96,23 +90,23 @@ class AdminMalls extends React.Component {
 	}
 
 	render(){
-		const { loading, shops } = this.props.data;
+		const { loading, malls } = this.props.data;
 
 		if (loading) { return <div>Loading...</div>; }
 
 		return (
 			<div>
-				{/*<Button type="primary" onClick={this.showModal}>+ Add Shop</Button>
-				<AddShopForm
+				<Button type="primary" onClick={this.showModal}>+ Add Mall</Button>
+				<AddMallForm
 					ref={this.saveFormRef}
 					visible={this.state.visible}
 					onCancel={this.handleCancel}
 					onCreate={this.handleCreate}
 					loadingSubmit={this.state.loadingSubmit}
 					{...this.props}
-				/>*/}
+				/>
 				<Row>
-					<AdminShopsTable shops={shops} />
+					<AdminMallsTable malls={malls} />
 				</Row>
 			</div>
 		);
@@ -122,7 +116,7 @@ class AdminMalls extends React.Component {
 
 // EXPORT
 // ==============================
-export default graphql(CREATE_SHOP)(
+export default graphql(CREATE_MALL)(
 	graphql(FETCH_MALLS)(AdminMalls)
 );
 
