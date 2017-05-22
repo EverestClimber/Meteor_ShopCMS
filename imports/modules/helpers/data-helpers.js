@@ -29,6 +29,9 @@ export const getCategoryTag = (tag) => {
           case 'departmentstores':
               return 'Department Stores'
               break;
+          case 'discountvariety':
+              return 'Discount Stores'
+              break;
           case 'entertainment':
               return 'Entertainment'
               break;

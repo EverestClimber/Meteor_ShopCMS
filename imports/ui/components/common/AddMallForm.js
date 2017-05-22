@@ -90,7 +90,7 @@ class AddMall extends React.Component {
               <CountryInput getFieldDecorator={getFieldDecorator} />
             </Col>
           </Row>
-          {!this.props.data.loading && this.props.data.shops && (
+          {/*!this.props.data.loading && this.props.data.shops && (
               <FormItem label="Shops">
               {getFieldDecorator('shopIds', {
                 rules: [{ required: true, message: 'Please input your mall!' }],
@@ -107,7 +107,7 @@ class AddMall extends React.Component {
                 </Select>
               )}
             </FormItem>
-          )}
+          )*/}
         </Form>
       </Modal>
     );

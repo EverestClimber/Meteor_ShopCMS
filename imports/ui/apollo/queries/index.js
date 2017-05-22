@@ -5,8 +5,13 @@ const shopFragment = gql`
         _id
         title
         description
-        category
+        categories
         image
+        mallId
+        attachments {
+			_id
+			url
+		}
 		owner {
 			_id
 			emails {
@@ -25,6 +30,18 @@ const shopFragment = gql`
     }
 `;
 
+
+
+export const GET_USER = gql`
+	query getUserById($_id: ID!) {
+		getUserById(_id: $_id) {
+			_id
+			emails { address, verified }
+			roles
+			profile { firstName, lastName }
+		}
+	}
+`;
 
 // FETCH_SHOP
 // ============================
@@ -47,7 +64,7 @@ export const FETCH_SHOPS = gql`
 			_id
 			title
 			description
-			category
+			categories
 			image
 			location {
 				lat
@@ -71,4 +88,14 @@ export const FETCH_MALLS = gql`
 			}
 		} 
 	}
+`;
+
+export const GET_USER_DATA = gql`
+  query getCurrentUser {
+    user {
+      emails { address, verified },
+      roles,
+      _id
+    }
+  }
 `;

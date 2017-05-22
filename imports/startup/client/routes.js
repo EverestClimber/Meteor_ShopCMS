@@ -53,15 +53,17 @@ const AppRoutes = () => {
       {/*ADMIN AREA*/}
       <Route path="/admin" breadcrumbName='Admin' component={ AdminLayout }>
         <IndexRoute name="index" component={ AdminHomePage } />
-        <Route path="/admin/users" breadcrumbName='Users' component={ AdminUsersPage }  />
+        <Route path="/admin/account" breadcrumbName='Account' component={ AdminAccountPage }  />
         <Route path="/admin/malls" breadcrumbName='Malls' component={ AdminMalls }  />
+
         <Route path="shops" breadcrumbName='Shops' component={ AdminShopsPage }>
           <Route path=":_id" breadcrumbName='Shop Detail' component={ AdminShopSinglePage } />
         </Route>
+        
         <Route path="users" breadcrumbName='Users' component={ AdminUsersPage }>
-          <Route path=":_id" component={ AdminUsersSinglePage }  />
+          <Route path=":_id" breadcrumbName='User Detail' component={ AdminUsersSinglePage }  />
         </Route>
-        <Route path="/admin/account" breadcrumbName='Account' component={ AdminAccountPage }  />
+        
       </Route>
 
     </Router>

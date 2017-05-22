@@ -1,18 +1,36 @@
 import React from 'react';
 import { browserHistory } from 'react-router';
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
+
 import Button from 'antd/lib/button';
 import Spin from 'antd/lib/spin';
 import Card from 'antd/lib/card';
 import Tag from 'antd/lib/tag';
-
 import Popconfirm from 'antd/lib/popconfirm';
+import Tabs from 'antd/lib/tabs';
+import Row from 'antd/lib/row';
+// APOLLO
+import { graphql } from 'react-apollo';
 import { FETCH_SHOP } from '../../apollo/queries';
 import { DELETE_SHOP } from '../../apollo/mutations';
 import apollo from '../../apollo/ApolloClient';
+// MODULES
+import { getCategoryTag } from '/imports/modules/helpers'
+//COMPONENTS
+import EditShopForm from '/imports/ui/components/common/EditShopForm'
 
-class AdminShopSinglePage extends React.Component {
+
+// CONSTANTS & DESTRUCTURING
+// ===================================
+const TabPane = Tabs.TabPane;
+
+// STYLES
+// ===================================
+const styles = {
+  rowContainer: { width: 850, maxWidth: '90%', margin: 'auto', marginTop: 15 }
+}
+
+
+class ShopSingle extends React.Component {
   onDelete = () => {
     const { shopById, loading } = this.props.data;
 
@@ -41,7 +59,9 @@ class AdminShopSinglePage extends React.Component {
           <h2>{shopById.title || ''}</h2>
           <p>{shopById.description || ''}</p>
           <h3>categories:</h3>
-          {shopById.category && <Tag color="green">{shopById.category || ''}</Tag>}
+          {shopById.categories && shopById.categories.length > 0 
+            && shopById.categories.map(item => <Tag color="green" key={item}>{getCategoryTag(item)}</Tag>)
+          }
         </Card>
 
         <Card title='Created By:' style={{marginTop: 10}}>
@@ -50,11 +70,43 @@ class AdminShopSinglePage extends React.Component {
           <h2>{shopById.owner && shopById.owner.profile.firstName || ''}</h2>
           <h2>{shopById.owner && shopById.owner.profile.lastName || ''}</h2>
         </Card>
-        
       </div>
     );
   }
 }
+
+// EXPORTED COMPONENT
+// ===================================
+class AdminShopSinglePage extends React.Component {
+  
+  render() {
+    const { data } = this.props;
+
+    if (data.loading) { return <Spin /> }
+
+    return (
+      <div>
+        <Row gutter={10} type="flex" justify="center" align="middle" style={styles.rowContainer}>
+          <Tabs defaultActiveKey="1">
+            <TabPane tab="Shop" key="1">
+              <div style={styles.rowContainer}>
+                <ShopSingle {...this.props}/>
+              </div>
+            </TabPane>
+            <TabPane tab="Edit Shop" key="2">
+              <div style={styles.rowContainer}>
+                <EditShopForm shop={data.shopById} />
+              </div>
+            </TabPane>
+          </Tabs>
+        </Row>
+      </div>
+    );
+  }
+}
+// EXPORTED COMPONENT
+// ===================================
+
 
 
 

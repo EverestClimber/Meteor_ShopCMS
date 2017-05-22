@@ -53,13 +53,7 @@ class PicturesWallContainer extends React.Component {
     this.state = {
       previewVisible: false,
       previewImage: '',
-      loading: false,
-      fileList: [{
-        uid: -1,
-        name: 'xxx.png',
-        status: 'done',
-        url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-      }],
+      loading: false
     };
     this.handleCancel = this.handleCancel.bind(this);
     this.handlePreview = this.handlePreview.bind(this);

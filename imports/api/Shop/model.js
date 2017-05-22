@@ -87,8 +87,8 @@ Shops.schema = new SimpleSchema({
     type: addressSchema,
     optional: true
   },
-  category: {
-    type: String,
+  categories: {
+    type: [String],
     optional: true,
   },
   phone: {

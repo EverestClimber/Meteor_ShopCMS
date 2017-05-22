@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Shops } from './model';
 import { Attachments } from '../Attachment/model';
+import { Malls } from '../Mall/model';
 
 import { createError } from 'apollo-errors';
 import { buildShop, getShopSearchResults } from '../api-helpers';
@@ -21,7 +22,7 @@ type Shop {
 	    _id: ID!
 	    title: String!, 
 	  	description: String!
-	  	category: String!
+	  	categories: [String!]
 	  	image: String
 	  	phone: String
 	  	phone2: String
@@ -36,6 +37,7 @@ type Shop {
 	  	openDays: [String]
 	    location: Address
 	    owner: User
+	    mall: Mall
 	    attachments: [Attachment]
 	}
 
@@ -73,7 +75,7 @@ type Mutation {
 	createShop(
 		title: String!, 
 		description: String!
-		category: String!
+		categories: [String!]
 		image: String
 		latitude: String
 		longitude: String
@@ -128,6 +130,11 @@ export const ShopResolvers = {
   			let user = Meteor.users.findOne({_id: ownerId});
   			if (!user) { return null }
   			return user
+  		},
+  		mall: ({ mallId }, args, context) => {
+  			let mall = Malls.findOne({_id: mallId});
+  			if (!mall) { return null }
+  			return mall
   		},
   		attachments: ({ _id }, args, context) => {
   			let attachments = Attachments.find({ownerId: _id}).fetch();

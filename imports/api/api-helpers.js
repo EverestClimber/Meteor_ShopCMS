@@ -146,19 +146,20 @@ export const buildShop = async (args, user) => {
 
 	return new Promise(
 	    (resolve, reject) => { // fat arrow
-	    	let report = {
+	    	let shop = {
 	    		title: args.title || null,
 	    		description: args.description || null,
-	    		category: args.category || null,
+	    		categories: args.categories || [],
 				ownerId: user._id,
-				phone: user.phone,
-				website: user.website,
-				email: user.email,
+				phone: args.phone || null,
+				website: args.website || null,
+				email: args.email || null,
+				mallId: args.mallId || null,
 				//ownerName: `${user.profile.firstName} ${user.profile.lastName}` || null,
 				image: args.image || null,
 				location
 			}
-	    	resolve(report)
+	    	resolve(shop)
 	    }
 	)
 };

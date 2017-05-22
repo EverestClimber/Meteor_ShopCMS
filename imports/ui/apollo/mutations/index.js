@@ -10,6 +10,29 @@ export const DELETE_SHOP = gql`
 	}
 `
 
+
+export const ADMIN_SAVE_USERPROFILE = gql`
+	mutation AdminSaveUserProfile (
+		$_id: ID!
+		$email: String
+		$firstName: String
+		$lastName: String
+		$roles: [String]
+		){
+		adminSaveUserProfile (
+			_id: $_id
+			email: $email
+			firstName: $firstName
+			lastName: $lastName
+			roles:  $roles
+		){
+			_id
+		}
+	}
+`;
+
+
+
 export const CREATE_MALL = gql`
 	mutation CreateMall (
 	  		$title: String!, 
@@ -51,16 +74,18 @@ export const CREATE_SHOP = gql`
 	mutation CreateShop(
 	  $title: String!
 	  $description: String!
-	  $category: String!
+	  $categories: [String!]
 	  $image: String
 	  $longitude:String
 	  $latitude: String
+	  $mallId: String
 	  $location: LocationData
 	){
 	  createShop(
 	    title: $title
+	    mallId: $mallId
 	    description: $description
-	    category: $category
+	    categories: $categories
 	    image: $image
 	    longitude: $longitude
 	    latitude: $latitude

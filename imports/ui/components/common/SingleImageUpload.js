@@ -21,7 +21,7 @@ export class SingleImageUpload extends React.Component{
   constructor(props){
     super(props);
       this.state = {
-        imageUrl: false,
+        imageUrl: this.props.defaultImage || false, 
         loading: false
       };
       this.normFile = this.normFile.bind(this);

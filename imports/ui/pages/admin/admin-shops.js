@@ -59,6 +59,8 @@ class AdminShopsTable extends React.Component {
 
 // EXPORTED COMPONENT
 // ==============================
+// EXPORTED COMPONENT
+// ==============================
 class AdminShopsPage extends React.Component {
 
 	state = { visible: false, loadingSubmit: false, errors: [] }
@@ -72,10 +74,11 @@ class AdminShopsPage extends React.Component {
 	handleCreate = ({longitude, latitude, image, imageList}) => {
 		const form = this.form;
 		this.setState({loadingSubmit: true})
-		form.validateFields((err, { title, description, category, street1, street2, country, state, postal, suburb  }) => {
+		form.validateFields((err, { title, description, mallId, categories, street1, street2, country, state, postal, suburb  }) => {
 			if (err) { return this.setState({loadingSubmit: false}); }
+			if (!image) { return this.setState({loadingSubmit: false, errors: ['please add a main image!']}); }
 			let variables = { 
-				title, description, category, image, location: { street1, street2, country, state, postal, suburb } 
+				title, description, categories, image, mallId, location: { street1, street2, country, state, postal, suburb } 
 			};
 			this.props.createShop({ variables })
 				.then((res) => {
@@ -97,8 +100,7 @@ class AdminShopsPage extends React.Component {
 				})
 				.catch(e => {
 					const errors = e.graphQLErrors.map( err => err.message );
-					this.setState({ visible: false, loadingSubmit: false, errors });
-					return console.log(errors);
+					return this.setState({ loadingSubmit: false, errors });
 			});
 
 		});
@@ -118,6 +120,7 @@ class AdminShopsPage extends React.Component {
 					visible={this.state.visible}
 					onCancel={this.handleCancel}
 					onCreate={this.handleCreate}
+					errors={this.state.errors}
 					loadingSubmit={this.state.loadingSubmit}
 					{...this.props}
 				/>
@@ -139,7 +142,6 @@ class AdminShopsPage extends React.Component {
 		);
 	}
 }
-
 
 // EXPORT
 // ==============================

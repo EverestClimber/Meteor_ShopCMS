@@ -5,6 +5,7 @@ import { browserHistory } from 'react-router'
 //
 import { graphql, withApollo } from 'react-apollo';
 import gql from 'graphql-tag';
+import { GET_USER_DATA } from '../../apollo/queries';
 //modules
 import { handleLogout, ApolloRoles } from '../../../modules/helpers';
 import { LoadingScreen } from '../../components/common';
@@ -103,15 +104,6 @@ class PublicLayout extends React.Component {
   }
 }
 
-const GET_USER_DATA = gql`
-  query getCurrentUser {
-    user {
-      emails { address, verified },
-      roles,
-      _id
-    }
-  }
-`;
 
 
 export default withApollo(graphql(GET_USER_DATA)(PublicLayout))
