@@ -92,6 +92,27 @@ type Mutation {
 		contactName: String
 		openDays: [String]
 	): Shop
+	saveShop(
+		_id: ID!
+		title: String!
+		description: String!
+		categories: [String!]
+		image: String
+		latitude: String
+		longitude: String
+		location: LocationData
+		mallId: String
+		phone: String
+		phone2: String
+		website: String
+		email: String
+		instagram: String
+		facebook: String
+		twitter: String
+		youtube: String
+		contactName: String
+		openDays: [String]
+	): Shop
 }
 
 `];
@@ -137,7 +158,7 @@ export const ShopResolvers = {
   			return mall
   		},
   		attachments: ({ _id }, args, context) => {
-  			let attachments = Attachments.find({ownerId: _id}).fetch();
+  			let attachments = Attachments.find({shopId: _id}).fetch();
   			if (!attachments || attachments.length === 0) { return [] }// if attahments does not exist or length of array is 0, just return an empty array
   			return attachments
   		}
@@ -149,11 +170,42 @@ export const ShopResolvers = {
 			}
 			// TODO: check if record already exists
 			//	check by a regex on title AND a query for lat/lng (maybe within X miles)
-			let shop = await buildShop(args, context.user)
-			let docId = Shops.insert(shop);
-			if (docId) {
-				return Shops.findOne({_id: docId});
+			let shop;
+			try {
+				shop = await buildShop(args, context.user);
+				let docId = Shops.insert(shop);
+				if (docId) { return Shops.findOne({_id: docId}); }
 			}
+			catch(e) {
+				console.log(e);
+				throw new FooError({ data: { message: e } });
+			}
+
+		},
+		async saveShop(root, args, context) {
+			if (!context.user) {
+				throw new FooError({ data: { authentication: 'you must sign in first' } });
+			}
+			let shop = Shops.findOne({_id: args._id});
+			if (!shop) {
+				throw new FooError({ data: { authentication: 'shop does not exist!' } });
+			}
+			if ((context.user._id !== shop.ownerId) && !context.user.roles.includes('admin')) {
+				throw new FooError({ data: { authentication: 'you must be the owner or an admin to delete this record!' } });
+			}
+			// TODO: check if record already exists
+			//	check by a regex on title AND a query for lat/lng (maybe within X miles)
+			//let shop = await buildShop(args, context.user)
+			let docToUpdate = { _id: args._id }
+			let dataToUpdate = {
+				title: args.title,
+				descrption: args.description,
+				categories: args.categories,
+				image: args.image,
+				mallId: args.mallId
+			}
+			Shops.update(docToUpdate, { $set: dataToUpdate });
+			return shop;
 
 		},
 		async deleteShop(root, { shopId }, context) {

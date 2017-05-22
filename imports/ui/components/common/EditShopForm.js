@@ -15,6 +15,7 @@ import Alert from 'antd/lib/alert';
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import { FETCH_MALLS } from '/imports/ui/apollo/queries'
+import { SAVE_SHOP, ADD_ATTACHMENTS } from '/imports/ui/apollo/mutations'
 // COMPONENTS
 import { SingleImageUpload } from './SingleImageUpload'
 import CountryInput from './CountryInput'
@@ -33,34 +34,84 @@ const FormItem = Form.Item;
 const Option = Select.Option;
 
 
+const buildImagObject = (attachment) => {
+  let image = {
+    _id: attachment._id,
+    uid: attachment._id,
+    name: attachment.name,
+    fileType: attachment.fileType,
+    url: attachment.url,
+  }
+  return image;
+}
+
 // EXPORTED COMPONENT
 // ========================================
 class EditShop extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = { 
+      image: this.props.shop.image || null,
+      imageList: this.props.shop.attachments.length > 0 ? this.props.shop.attachments.map(item => buildImagObject(item)) : [],
+      errors: [],
+      loading: false
+    };
+  }
+  
+  onSuccessfulSubmit = (data, form) => {
+    const { image, imageList } = this.state;
 
-  state = { 
-    location: null, 
-    image: null,
-    imageList: this.props.shop.attachments || [],
-    errors: [],
-    loading: false
-  };
+    if (!imageList || imageList.length === 0) {
+      this.props.data.refetch();
+      form.resetFields();
+      return this.setState({ loading: false, errors: [] });
+    }
+    let attachmentVariables = {
+      shopId: data.saveShop._id,
+      userId: data.saveShop.owner._id,
+      images: imageList,
+    }
+    this.props.addAttachments({ variables: attachmentVariables }).then(()=>{
+      this.props.data.refetch();
+      form.resetFields();
+      return this.setState({ loading: false, errors: [] });
+    });
+  }
+  onError = (e) => {
+    const errors = e && e.graphQLErrors && e.graphQLErrors.length > 0 && e.graphQLErrors.map( err => err.message );
+    return this.setState({ loading: false, errors });
+  }
   handleSubmit = (e) => {
     e.preventDefault();
+    const { form, saveShop, shop } = this.props;
+    const { image, imageList } = this.state;
+
     this.setState({loading: true});
-    setTimeout(()=>{
-      this.setState({loading: false});
-    }, 3000)
+    
+    form.validateFields((err, { title, description, mallId, categories }) => {
+      if (err) { return this.setState({loading: false}); }
+      if (!image) { return this.setState({loading: false, errors: ['please add a main image!']}); }
+
+      let variables = { _id: shop._id, title, description, mallId, categories, image }
+
+      saveShop({ variables })
+        .then( res => this.onSuccessfulSubmit(res.data, form) )
+        .catch( e => this.onError(e) );
+
+    });
+    
   }
   onSuccessfulImgUpload = (value) => {
     
-    let imageToInsert = {
-            uid: Random.id(),
-            name: value.name,
-            fileType: value.fileType,
-            url: value.url,
-          }
+    let imageToInsert = { uid: Random.id(), name: value.name, fileType: value.fileType, url: value.url, }
     let currentImageList = this.state.imageList;
-    currentImageList.push(imageToInsert)
+
+    if (currentImageList.length === 0) {
+      currentImageList = [imageToInsert]
+    } else {
+      currentImageList.push(imageToInsert)
+    }
+    
     this.setState({imageList: currentImageList});
   }
   onRemoveImg = (uid) => {
@@ -76,15 +127,15 @@ class EditShop extends React.Component {
   }
   render(){
     const { image, imageList, errors } = this.state;
-    const { loadingSubmit, data, shop, form } = this.props;
+    const { data, shop, form } = this.props;
     const { getFieldDecorator } = form;
-
+    console.log(shop)
     return (
       <Card style={{width: 550, margin: 'auto', maxWidth: '90%'}}>
       <Form layout="vertical" onSubmit={this.handleSubmit}>
         <h3>Main Image</h3>
         <SingleImageUpload 
-          defaultImage={shop.image} 
+          defaultImage={this.state.image} 
           onSuccessfulUpload={(image) => this.setState({ image })} 
         />
         <h3>General Info</h3>
@@ -144,7 +195,11 @@ class EditShop extends React.Component {
 // WRAP IN HOC FORM CREATOR
 // ========================================
 const EditShopForm = Form.create()(
-  graphql(FETCH_MALLS)(EditShop)
+  graphql(FETCH_MALLS)(
+    graphql(SAVE_SHOP, { name: 'saveShop' })(
+      graphql(ADD_ATTACHMENTS, { name: 'addAttachments' })(EditShop)
+    )
+  )
 );
 
 

@@ -8,8 +8,7 @@ import { loginWithPassword, createUser, logout, onTokenChange } from 'meteor-apo
 const afterLogin = (userId, apollo, _this) => {
   message.success('welcome!'); 
   apollo.resetStore();
-  _this.setState({ loading: false });
-  return browserHistory.push('/admin');
+  return _this.setState({ loading: false });
 /*  if (Roles.userIsInRole(userId, ['admin'])) {
       return browserHistory.push('/admin');
   } else {

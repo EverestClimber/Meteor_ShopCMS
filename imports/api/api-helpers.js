@@ -73,8 +73,8 @@ export const getLocationFromCoords = (latitude, longitude) => {
 	return new Promise(
 	    (resolve, reject) => { // fat arrow
 	    	geocoder.reverseGeocode( latitude, longitude, function ( err, { results } ) {
-			  // do something with data
-			 
+			 if (err) { return console.log(err) }
+
 			  location = {
 		          fullAddress: results[0] && results[0].formatted_address || '',
 		          lat: parseFloat(latitude),
@@ -105,7 +105,8 @@ export const getLocationFromAddress = (locationArgs) => {
 	return new Promise(
 	    (resolve, reject) => { // fat arrow
 	    	geocoder.geocode( stringToGeocode, function ( err, { results } ) {
-			  // do something with data
+			  if (err) { return console.log(err) }
+			  	
 			  location = {
 		          fullAddress: results[0] && results[0].formatted_address || '',
 		          lat: results[0].geometry.location.lat, //parseFloat(latitude),
@@ -144,8 +145,13 @@ export const buildShop = async (args, user) => {
 	}
 
 
+
+
 	return new Promise(
 	    (resolve, reject) => { // fat arrow
+	    	if (!location) {
+				reject('could not find this location')
+			}
 	    	let shop = {
 	    		title: args.title || null,
 	    		description: args.description || null,
