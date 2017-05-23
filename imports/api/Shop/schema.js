@@ -4,10 +4,10 @@ import { check } from 'meteor/check';
 import { Shops } from './model';
 import { Attachments } from '../Attachment/model';
 import { Malls } from '../Mall/model';
-
+//import { createResolver } from 'apollo-resolvers';
 import { createError } from 'apollo-errors';
 import { buildShop, getShopSearchResults } from '../api-helpers';
-
+import { isAuthenticatedResolver, isManagerResolver, isAdminResolver, isOwnerOrAdminResolver } from '../base-resolvers';
 
 const FooError = createError('FooError', {
   message: 'A foo error has occurred'
@@ -101,6 +101,62 @@ type Mutation {
 `];
 
 
+
+
+const deleteShop = isOwnerOrAdminResolver.createResolver(
+	async (root, { shopId }, context) => {
+		// TODO: check if record already exists
+		//	check by a regex on title AND a query for lat/lng (maybe within X miles)
+		Shops.remove({_id: shopId}, (err, response) => {
+			return shopId;
+		});
+	}
+);
+
+const createShop = isAuthenticatedResolver.createResolver(
+	async (root, { params }, context) => {
+		// TODO: check if record already exists
+		//	check by a regex on title AND a query for lat/lng (maybe within X miles)
+		let shop;
+		try {
+			shop = await buildShop(params, context.user);
+			let docId = Shops.insert(shop);
+			if (docId) { return Shops.findOne({_id: docId}); }
+		}
+		catch(e) {
+			console.log(e);
+			throw new FooError({ data: { message: e } });
+		}
+	}
+);
+
+const saveShop = isOwnerOrAdminResolver.createResolver(
+	async (root, { params, _id }, context) => {
+
+		// TODO: check if record already exists
+		//	check by a regex on title AND a query for lat/lng (maybe within X miles)
+		//let shop = await buildShop(args, context.user)
+		let dataToUpdate = {
+			title: params.title,
+			descrption: params.description,
+			categories: params.categories,
+			image: params.image,
+			mallId: params.mallId,
+			phone: params.phone,
+			phone2: params.phone2,
+			website: params.website,
+			email: params.email,
+			instagram: params.instagram,
+			facebook: params.facebook,
+			twitter: params.twitter,
+			youtube: params.youtube,
+		}
+
+		Shops.update({ _id }, { $set: dataToUpdate });
+		return shop;
+	}
+);
+
 export const ShopResolvers = {
 	Query: {
 	    shopById: (root, args, context) => Shops.findOne({ _id: args._id }),
@@ -147,84 +203,9 @@ export const ShopResolvers = {
   		}
   	},
 	Mutation: {
-		async createShop(root, { params }, context) {
-			if (!context.user) {
-				throw new FooError({ data: { authentication: 'you must sign in first' } });
-			}
-			// TODO: check if record already exists
-			//	check by a regex on title AND a query for lat/lng (maybe within X miles)
-			let shop;
-			try {
-				shop = await buildShop(params, context.user);
-				let docId = Shops.insert(shop);
-				if (docId) { return Shops.findOne({_id: docId}); }
-			}
-			catch(e) {
-				console.log(e);
-				throw new FooError({ data: { message: e } });
-			}
-
-		},
-		async saveShop(root, { params, _id }, context) {
-			if (!context.user) {
-				// if the user is not signed in, throw an error
-				throw new FooError({ data: { authentication: 'you must sign in first' } });
-			}
-
-			let shop = Shops.findOne({ _id });
-
-			if (!shop) {
-				// if the shop does not exist, throw an error
-				throw new FooError({ data: { authentication: 'shop does not exist!' } });
-			}
-			if ((context.user._id !== shop.ownerId) && !context.user.roles.includes('admin')) {
-				// if user is not the owner or an admin, they can not edit the shop's information
-				throw new FooError({ data: { authentication: 'you must be the owner or an admin to delete this record!' } });
-			}
-
-			// TODO: check if record already exists
-			//	check by a regex on title AND a query for lat/lng (maybe within X miles)
-			//let shop = await buildShop(args, context.user)
-			let dataToUpdate = {
-				title: params.title,
-				descrption: params.description,
-				categories: params.categories,
-				image: params.image,
-				mallId: params.mallId
-				phone: params.phone
-				phone2: params.phone2
-				website: params.website
-				email: params.email
-				instagram: params.instagram
-				facebook: params.facebook
-				twitter: params.twitter
-				youtube: params.youtube
-			}
-
-			Shops.update({ _id }, { $set: dataToUpdate });
-			return shop;
-
-		},
-		async deleteShop(root, { shopId }, context) {
-			if (!context.user) {
-				throw new FooError({ data: { authentication: 'you must sign in first' } });
-			}
-
-			let shop = Shops.findOne({_id: shopId});
-
-			if (!shop) {
-				throw new FooError({ data: { authentication: 'shop does not exist!' } });
-			}
-			if ((context.user._id !== shop.ownerId) && !context.user.roles.includes('admin')) {
-				throw new FooError({ data: { authentication: 'you must be the owner or an admin to delete this record!' } });
-			}
-			// TODO: check if record already exists
-			//	check by a regex on title AND a query for lat/lng (maybe within X miles)
-			Shops.remove({_id: shopId}, (err, response) => {
-				return shopId;
-			});
-
-		},
+		createShop,
+		saveShop,
+		deleteShop,
 	}
 };
 

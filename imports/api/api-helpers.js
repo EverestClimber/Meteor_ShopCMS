@@ -164,14 +164,14 @@ export const buildShop = async (params, user) => {
 				//ownerName: `${user.profile.firstName} ${user.profile.lastName}` || null,
 				image: params.image || null,
 				location,
-				phone: params.phone
-				phone2: params.phone2
-				website: params.website
-				email: params.email
-				instagram: params.instagram
-				facebook: params.facebook
-				twitter: params.twitter
-				youtube: params.youtube
+				phone: params.phone,
+				phone2: params.phone2,
+				website: params.website,
+				email: params.email,
+				instagram: params.instagram,
+				facebook: params.facebook,
+				twitter: params.twitter,
+				youtube: params.youtube,
 			}
 	    	resolve(shop)
 	    }
