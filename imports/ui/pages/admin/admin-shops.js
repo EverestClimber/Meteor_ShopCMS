@@ -59,6 +59,8 @@ class AdminShopsTable extends React.Component {
 
 // EXPORTED COMPONENT
 // ==============================
+// EXPORTED COMPONENT
+// ==============================
 class AdminShopsPage extends React.Component {
 
 	state = { visible: false, loadingSubmit: false, errors: [] }
@@ -69,37 +71,39 @@ class AdminShopsPage extends React.Component {
 	showModal = () => {
 		this.setState({ visible: true });
 	}
+	onSuccessfulSubmit = (res, imageList, form) => {
+		if (!imageList || imageList.length === 0) {
+			this.props.data.refetch();
+			form.resetFields();
+			return this.setState({ visible: false, loadingSubmit: false, errors: [] });
+		}
+		let attachmentVariables = {
+			shopId: res.data.createShop._id,
+			userId: res.data.createShop.owner._id,
+			images: imageList
+		}
+		this.props.addAttachments({ variables: attachmentVariables }).then(()=>{
+			this.props.data.refetch();
+			form.resetFields();
+			return this.setState({ visible: false, loadingSubmit: false, errors: [] });
+		});
+	}
+	onError = (e) => {
+		const errors = e && e.graphQLErrors.length > 0 && e.graphQLErrors.map( err => err.message );
+		return this.setState({ loadingSubmit: false, errors });
+	}
 	handleCreate = ({longitude, latitude, image, imageList}) => {
 		const form = this.form;
 		this.setState({loadingSubmit: true})
-		form.validateFields((err, { title, description, category, street1, street2, country, state, postal, suburb  }) => {
+		form.validateFields((err, { title, description, mallId, categories, street1, street2, country, state, postal, suburb  }) => {
 			if (err) { return this.setState({loadingSubmit: false}); }
+			if (!image) { return this.setState({loadingSubmit: false, errors: ['please add a main image!']}); }
 			let variables = { 
-				title, description, category, image, location: { street1, street2, country, state, postal, suburb } 
+				title, description, categories, image, mallId, location: { street1, street2, country, state, postal, suburb } 
 			};
 			this.props.createShop({ variables })
-				.then((res) => {
-					if (!imageList || imageList.length === 0) {
-						this.props.data.refetch();
-						form.resetFields();
-						return this.setState({ visible: false, loadingSubmit: false });
-					}
-					let attachmentVariables = {
-						shopId: res.data.createShop._id,
-						userId: res.data.createShop.owner._id,
-						images: imageList
-					}
-					this.props.addAttachments({ variables: attachmentVariables }).then(()=>{
-						this.props.data.refetch();
-						form.resetFields();
-						return this.setState({ visible: false, loadingSubmit: false });
-					});
-				})
-				.catch(e => {
-					const errors = e.graphQLErrors.map( err => err.message );
-					this.setState({ visible: false, loadingSubmit: false, errors });
-					return console.log(errors);
-			});
+				.then( res => this.onSuccessfulSubmit(res, imageList, form) )
+				.catch(e => this.onError(e) );
 
 		});
 	}
@@ -112,15 +116,16 @@ class AdminShopsPage extends React.Component {
 
 		return (
 			<div>
-				<Button type="primary" onClick={this.showModal}>+ Add Shop</Button>
+				{/*<Button type="primary" onClick={this.showModal}>+ Add Shop</Button>
 				<AddShopForm
 					ref={this.saveFormRef}
 					visible={this.state.visible}
 					onCancel={this.handleCancel}
 					onCreate={this.handleCreate}
+					errors={this.state.errors}
 					loadingSubmit={this.state.loadingSubmit}
 					{...this.props}
-				/>
+				/>*/}
 				<Row>
 					<AdminShopsTable shops={shops} />
 				</Row>
@@ -139,7 +144,6 @@ class AdminShopsPage extends React.Component {
 		);
 	}
 }
-
 
 // EXPORT
 // ==============================

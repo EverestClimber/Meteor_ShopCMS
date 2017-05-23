@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Shops } from './model';
 import { Attachments } from '../Attachment/model';
+import { Malls } from '../Mall/model';
 
 import { createError } from 'apollo-errors';
 import { buildShop, getShopSearchResults } from '../api-helpers';
@@ -21,7 +22,7 @@ type Shop {
 	    _id: ID!
 	    title: String!, 
 	  	description: String!
-	  	category: String!
+	  	categories: [String]
 	  	image: String
 	  	phone: String
 	  	phone2: String
@@ -36,6 +37,7 @@ type Shop {
 	  	openDays: [String]
 	    location: Address
 	    owner: User
+	    mall: Mall
 	    attachments: [Attachment]
 	}
 
@@ -68,12 +70,32 @@ type Mutation {
 	# creates a new shop 
 	# title is the shopId title
 	# description is the shop content
-	# category is the category of the shops content
 	# image is the main image for he shop
 	createShop(
 		title: String!, 
 		description: String!
-		category: String!
+		categories: [String!]
+		image: String
+		latitude: String
+		longitude: String
+		location: LocationData
+		mallId: String
+		phone: String
+		phone2: String
+		website: String
+		email: String
+		instagram: String
+		facebook: String
+		twitter: String
+		youtube: String
+		contactName: String
+		openDays: [String]
+	): Shop
+	saveShop(
+		_id: ID!
+		title: String!
+		description: String!
+		categories: [String!]
 		image: String
 		latitude: String
 		longitude: String
@@ -129,8 +151,13 @@ export const ShopResolvers = {
   			if (!user) { return null }
   			return user
   		},
+  		mall: ({ mallId }, args, context) => {
+  			let mall = Malls.findOne({_id: mallId});
+  			if (!mall) { return null }
+  			return mall
+  		},
   		attachments: ({ _id }, args, context) => {
-  			let attachments = Attachments.find({ownerId: _id}).fetch();
+  			let attachments = Attachments.find({shopId: _id}).fetch();
   			if (!attachments || attachments.length === 0) { return [] }// if attahments does not exist or length of array is 0, just return an empty array
   			return attachments
   		}
@@ -142,11 +169,42 @@ export const ShopResolvers = {
 			}
 			// TODO: check if record already exists
 			//	check by a regex on title AND a query for lat/lng (maybe within X miles)
-			let shop = await buildShop(args, context.user)
-			let docId = Shops.insert(shop);
-			if (docId) {
-				return Shops.findOne({_id: docId});
+			let shop;
+			try {
+				shop = await buildShop(args, context.user);
+				let docId = Shops.insert(shop);
+				if (docId) { return Shops.findOne({_id: docId}); }
 			}
+			catch(e) {
+				console.log(e);
+				throw new FooError({ data: { message: e } });
+			}
+
+		},
+		async saveShop(root, args, context) {
+			if (!context.user) {
+				throw new FooError({ data: { authentication: 'you must sign in first' } });
+			}
+			let shop = Shops.findOne({_id: args._id});
+			if (!shop) {
+				throw new FooError({ data: { authentication: 'shop does not exist!' } });
+			}
+			if ((context.user._id !== shop.ownerId) && !context.user.roles.includes('admin')) {
+				throw new FooError({ data: { authentication: 'you must be the owner or an admin to delete this record!' } });
+			}
+			// TODO: check if record already exists
+			//	check by a regex on title AND a query for lat/lng (maybe within X miles)
+			//let shop = await buildShop(args, context.user)
+			let docToUpdate = { _id: args._id }
+			let dataToUpdate = {
+				title: args.title,
+				descrption: args.description,
+				categories: args.categories,
+				image: args.image,
+				mallId: args.mallId
+			}
+			Shops.update(docToUpdate, { $set: dataToUpdate });
+			return shop;
 
 		},
 		async deleteShop(root, { shopId }, context) {

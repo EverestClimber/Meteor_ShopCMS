@@ -24,7 +24,7 @@ export const getShopSearchResults = async (root, args, context) => {
 			// if a categories argument was passed add it to the andQueryArray
 			// to be used in the $and query
 			if (args.categories && args.categories.length > 0) {
-				let categoryQuery = { category: { $in: args.categories } }
+				let categoryQuery = { categories: { $in: args.categories } }
 				andQueryArray.push(categoryQuery)
 			}
 
@@ -73,8 +73,8 @@ export const getLocationFromCoords = (latitude, longitude) => {
 	return new Promise(
 	    (resolve, reject) => { // fat arrow
 	    	geocoder.reverseGeocode( latitude, longitude, function ( err, { results } ) {
-			  // do something with data
-			 
+			 if (err) { return console.log(err) }
+
 			  location = {
 		          fullAddress: results[0] && results[0].formatted_address || '',
 		          lat: parseFloat(latitude),
@@ -105,7 +105,8 @@ export const getLocationFromAddress = (locationArgs) => {
 	return new Promise(
 	    (resolve, reject) => { // fat arrow
 	    	geocoder.geocode( stringToGeocode, function ( err, { results } ) {
-			  // do something with data
+			  if (err) { return console.log(err) }
+			  	
 			  location = {
 		          fullAddress: results[0] && results[0].formatted_address || '',
 		          lat: results[0].geometry.location.lat, //parseFloat(latitude),
@@ -144,21 +145,27 @@ export const buildShop = async (args, user) => {
 	}
 
 
+
+
 	return new Promise(
 	    (resolve, reject) => { // fat arrow
-	    	let report = {
+	    	if (!location) {
+				reject('could not find this location')
+			}
+	    	let shop = {
 	    		title: args.title || null,
 	    		description: args.description || null,
-	    		category: args.category || null,
+	    		categories: args.categories || [],
 				ownerId: user._id,
-				phone: user.phone,
-				website: user.website,
-				email: user.email,
+				phone: args.phone || null,
+				website: args.website || null,
+				email: args.email || null,
+				mallId: args.mallId || null,
 				//ownerName: `${user.profile.firstName} ${user.profile.lastName}` || null,
 				image: args.image || null,
 				location
 			}
-	    	resolve(report)
+	    	resolve(shop)
 	    }
 	)
 };

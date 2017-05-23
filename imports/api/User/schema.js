@@ -48,6 +48,15 @@ type Mutation {
       lastName: String
       image: String
     ): User
+    # mutation for an admin to edit a users profile
+    adminSaveUserProfile (
+      _id: ID!
+      email: String,
+      firstName: String
+      lastName: String
+      image: String
+      roles: [String]
+    ): User
   }
 
 `];
@@ -71,6 +80,18 @@ export const UserResolvers = {
       let dataToUpdate = { 'emails.0.address': email }
       Meteor.users.update({ _id: _id }, { $set: dataToUpdate });
       return Meteor.users.findOne({ _id });
+    },
+    adminSaveUserProfile(root, args, { user }) {
+      if (!user || !user.roles.includes('admin')) { return; }
+      let dataToUpdate = {
+        'emails.0.address': args.email,
+        roles: args.roles,
+      }
+      Meteor.users.update({ _id: args._id }, { $set: dataToUpdate }, (err, res) => {
+        if (err) { return err }
+        return Meteor.users.findOne({ _id: args._id });
+      });
+      
     },
     saveUserExpoPushId(root, { expoPushId }, { user }) {
       check(expoPushId, String);

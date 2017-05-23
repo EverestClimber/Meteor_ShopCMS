@@ -1,36 +1,59 @@
+// TOP LEVEL IMPORTS
 import React from 'react';
 import { browserHistory } from 'react-router';
+// APOLLO
 import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
+import { GET_USER } from '../../apollo/queries';
+// ANTD
 import Button from 'antd/lib/button';
 import Spin from 'antd/lib/spin';
 import Card from 'antd/lib/card';
+import Tabs from 'antd/lib/tabs';
+import Row from 'antd/lib/row';
+// COMPONENTS
+import AdminEditUserForm from '/imports/ui/components/admin/AdminEditUserForm'
 
+
+
+// CONSTANTS & DESTRUCTURING
+// ===================================
+const TabPane = Tabs.TabPane;
+
+
+// STYLES
+// ===================================
+const styles = {
+  rowContainer: { width: 850, maxWidth: '90%', margin: 'auto', marginTop: 15 }
+}
+
+// EXPORTED COMPONENT
+// ===================================
 class AdminUsersSinglePage extends React.Component {
-  renderDocumentsList = () => {
-    const { loading, getUserById } = this.props.data;
 
-    if (loading) { return }
-
-    if (getUserById.documents && getUserById.documents.length > 0) { 
-      return getUserById.documents.map(doc => {
-        return (
-          <Card key={doc._id} title={doc.title}>
-          </Card>
-        );
-      })
-    }
-
-  }
   render() {
-    if (this.props.data.loading) { return <Spin /> }
+    const { data } = this.props;
+
+    if (data.loading) { return <Spin /> }
+
     return (
       <div>
-        <h1>{this.props.data.getUserById._id}</h1>
-        <div style={{width: 400, margin: '20px auto', maxWidth: '90%'}}>
-          <h1>User Documents:</h1>
-          {this.renderDocumentsList()}
-        </div>
+        <Row gutter={10} type="flex" justify="center" align="middle" style={styles.rowContainer}>
+          <Tabs defaultActiveKey="1">
+            <TabPane tab="Profile" key="1">
+              <div style={styles.rowContainer}>
+                <h1>{data.getUserById._id}</h1>
+              </div>
+            </TabPane>
+            <TabPane tab="Edit User" key="2">
+              <div style={styles.rowContainer}>
+                <AdminEditUserForm 
+                  user={data.getUserById} 
+                  {...this.props} 
+                />
+              </div>
+            </TabPane>
+          </Tabs>
+        </Row>
       </div>
     );
   }
@@ -38,22 +61,11 @@ class AdminUsersSinglePage extends React.Component {
 
 
 
-const GET_USER = gql`
-query getUserById($_id: ID!) {
-    getUserById(_id: $_id) {
-      _id
-      emails { address, verified }
-      documents {
-        _id
-        title
-        content
-      }
-    }
-  }
-`;
-
-
-
+// EXPORT
+// ===================================
 export default graphql(GET_USER, {
-  options: (props) => { return { variables: { _id: props.params._id } } }
+  options: (props) => {
+    let variables = { _id: props.params._id };
+    return { variables } 
+  }
 })(AdminUsersSinglePage);

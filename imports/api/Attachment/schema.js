@@ -80,7 +80,11 @@ export const AttachmentResolvers = {
 			});
 			
 			imagesToInsert.forEach( imageDoc => {
-				Attachments.insert(imageDoc)
+				let attachmentExists = Attachments.findOne({shopId: imageDoc.shopId, url: imageDoc.url});
+				 if (!attachmentExists) {
+				 	Attachments.insert(imageDoc)
+				 }
+				
 			});
 		},
 	}

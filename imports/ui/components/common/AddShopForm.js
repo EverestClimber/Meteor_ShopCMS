@@ -9,14 +9,22 @@ import Radio from 'antd/lib/radio';
 import Button from 'antd/lib/button';
 import Modal from 'antd/lib/modal';
 import Select from 'antd/lib/select';
-//Option
-//import { getWatchgroupOptions, PRIORITY_LEVEL, REPORT_TYPE } from '../../../modules/helpers'
+import Alert from 'antd/lib/alert';
+//APOLLO
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
+import { FETCH_MALLS } from '/imports/ui/apollo/queries'
+// COMPONENTS
 import { SingleImageUpload } from './SingleImageUpload'
-import Geosuggest from 'react-geosuggest';
-import { CATEGORY_OPTIONS } from '/imports/modules/helpers'
-import { MultipleImageUpload } from './MultipleImageUpload'
 import CountryInput from './CountryInput'
 import StateInput from './StateInput'
+import { MultipleImageUpload } from './MultipleImageUpload'
+// NPM
+import Geosuggest from 'react-geosuggest';
+// MODULES
+import { CATEGORY_OPTIONS, selectFilterByLabel } from '/imports/modules/helpers'
+
+
 
 // CONSTANTS & DESCTRUCTURING
 // ========================================
@@ -69,10 +77,17 @@ class AddShop extends React.Component {
     currentImageList = currentImageList.filter(item => item.uid !== uid);
     this.setState({imageList: currentImageList});
   }
+  getMallOptions(){
+    const { loading,  malls } = this.props.data;
+    if (!loading && malls && malls.length > 0) {
+      return malls.map(item => <Option key={item._id} value={item._id}>{item.title}</Option> )
+    }
+  }
   render(){
-      const { visible, onCancel, onCreate, form, loadingSubmit } = this.props;
-      const { getFieldDecorator } = form;
-      const { latitude, longitude, image, imageList } = this.state;
+    const { latitude, longitude, image, imageList } = this.state;
+    const { visible, onCancel, onCreate, form, loadingSubmit, data, errors } = this.props;
+    const { getFieldDecorator } = form;
+      
     return (
       <Modal
         visible={visible}
@@ -100,12 +115,19 @@ class AddShop extends React.Component {
           <FormItem label="description">
             {getFieldDecorator('description')(<Input type="textarea" rows={4}  placeholder="about this shop..." />)}
           </FormItem>
-            <FormItem label="Category">
-            {getFieldDecorator('category', {
-              rules: [{ required: true, message: 'Please input your Report Type!' }],
+            <FormItem label="Categories">
+            {getFieldDecorator('categories', {
+              rules: [{ required: true, message: 'Please input your categories!' }],
             })(
-              <Select style={{ width: '100%' }} placeholder="Please select a Report Type" >
-                {CATEGORY_OPTIONS.map( item => <Option key={item.value} value={item.label}> {item.label} </Option>)}
+              <Select 
+                  mode='multiple' 
+                  optionFilterProp="children" 
+                  filterOption={selectFilterByLabel}
+                  showSearch 
+                  style={{ width: '100%' }} 
+                  placeholder="Please select a Report Type"
+              >
+                {CATEGORY_OPTIONS.map( item => <Option key={item.value} value={item.value}> {item.label} </Option>)}
               </Select>
             )}
           </FormItem>
@@ -138,11 +160,19 @@ class AddShop extends React.Component {
               <CountryInput getFieldDecorator={getFieldDecorator} />
             </Col>
           </Row>
+          <FormItem label='Mall'>
+          {getFieldDecorator('mallId', {})(
+            <Select showSearch optionFilterProp="children" filterOption={selectFilterByLabel}>
+              {this.getMallOptions()}
+            </Select>
+          )}
+        </FormItem>
           <MultipleImageUpload 
             imageList={this.state.imageList}
             onSuccessfulImgUpload={this.onSuccessfulImgUpload}
             onRemoveImg={this.onRemoveImg}
           />
+          {errors && errors.length > 0 && errors.map( item => <Alert key={item} message={item} type="error" />)}
         </Form>
       </Modal>
     );
@@ -151,8 +181,12 @@ class AddShop extends React.Component {
 
 // WRAP IN HOC FORM CREATOR
 // ========================================
-const AddShopForm = Form.create()(AddShop);
+const AddShopForm = Form.create()(
+  graphql(FETCH_MALLS)(AddShop)
+);
+
 
 // EXPORT
 // ========================================
 export { AddShopForm };
+
