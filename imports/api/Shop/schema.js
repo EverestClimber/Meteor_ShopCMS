@@ -5,18 +5,13 @@ import { Shops } from './model';
 import { Attachments } from '../Attachment/model';
 import { Malls } from '../Mall/model';
 //import { createResolver } from 'apollo-resolvers';
-import { createError } from 'apollo-errors';
+import { createError, isInstance } from 'apollo-errors';
 import { buildShop, getShopSearchResults } from '../api-helpers';
 import { isAuthenticatedResolver, isManagerResolver, isAdminResolver, isOwnerOrAdminResolver } from '../base-resolvers';
-
-const FooError = createError('FooError', {
-  message: 'A foo error has occurred'
-});
 
 
 
 export const ShopSchema = [`
-
 
 type Shop {
 	    _id: ID!
@@ -124,8 +119,7 @@ const createShop = isAuthenticatedResolver.createResolver(
 			if (docId) { return Shops.findOne({_id: docId}); }
 		}
 		catch(e) {
-			console.log(e);
-			throw new FooError({ data: { message: e } });
+			return console.log(e);
 		}
 	}
 );
@@ -151,8 +145,10 @@ const saveShop = isOwnerOrAdminResolver.createResolver(
 			twitter: params.twitter,
 			youtube: params.youtube,
 		}
-
-		Shops.update({ _id }, { $set: dataToUpdate });
+		Shops.update({ _id }, { $set: dataToUpdate }, (err) => {
+			if (err) { return console.log(err); }
+		});
+		let shop = Shops.findOne({ _id });
 		return shop;
 	}
 );

@@ -1,6 +1,7 @@
 import { UnknownError, UnauthorizedError, AlreadyAuthenticatedError, ForbiddenError } from './base-errors';
 import { createResolver } from 'apollo-resolvers';
 import { Shops } from './Shop/model';
+import { createError, isInstance } from 'apollo-errors';
 // THESE RESOLVES CAN BE ATTACHED TO OTHER RESOLVERS 
 // TO PROVIDE MIDDLEWARE FUNCTIONALITY FOR CATCHING AND RETURNING ERRORS
 // see: https://www.youtube.com/watch?v=xaorvBjCE7A
@@ -11,9 +12,9 @@ const baseResolver = createResolver(
   null,
 
   (root, args, context, error) => {
-  	if (isInstance(error)) {
-  		return error
-  	}
+  	
+  	if (isInstance(error)) return error;
+
   	return new UnknownError({
   		data: {
   			name: error.name
@@ -32,9 +33,9 @@ export const isAuthenticatedResolver = baseResolver.createResolver(
 );
 
 export const isOwnerOrAdminResolver = isAuthenticatedResolver.createResolver(
-	(root, { shopId }, context) => {
-		let shop = Shops.findOne({_id: shopId});
-
+	(root, { params, _id }, context) => {
+		let shop = Shops.findOne({ _id });
+		
 		if (!shop) {
 			throw new ForbiddenError();
 		}
