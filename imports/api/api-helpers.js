@@ -24,7 +24,7 @@ export const getShopSearchResults = async (root, args, context) => {
 			// if a categories argument was passed add it to the andQueryArray
 			// to be used in the $and query
 			if (args.categories && args.categories.length > 0) {
-				let categoryQuery = { category: { $in: args.categories } }
+				let categoryQuery = { categories: { $in: args.categories } }
 				andQueryArray.push(categoryQuery)
 			}
 

@@ -22,7 +22,7 @@ type Shop {
 	    _id: ID!
 	    title: String!, 
 	  	description: String!
-	  	categories: [String!]
+	  	categories: [String]
 	  	image: String
 	  	phone: String
 	  	phone2: String
@@ -70,7 +70,6 @@ type Mutation {
 	# creates a new shop 
 	# title is the shopId title
 	# description is the shop content
-	# category is the category of the shops content
 	# image is the main image for he shop
 	createShop(
 		title: String!, 
