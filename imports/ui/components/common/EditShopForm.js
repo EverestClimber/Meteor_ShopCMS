@@ -92,8 +92,8 @@ class EditShop extends React.Component {
       if (err) { return this.setState({loading: false}); }
       if (!image) { return this.setState({loading: false, errors: ['please add a main image!']}); }
 
-      let variables = { _id: shop._id, title, description, mallId, categories, image }
-
+      let params = { title, description, mallId, categories, image }
+      let variables = { _id: shop._id, params }
       saveShop({ variables })
         .then( res => this.onSuccessfulSubmit(res.data, form) )
         .catch( e => this.onError(e) );

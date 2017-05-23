@@ -62,6 +62,27 @@ type Query {
     	): [Shop],
 	  }
 
+input ShopParams {
+	title: String!, 
+	description: String!
+	categories: [String!]
+	image: String
+	latitude: String
+	longitude: String
+	location: LocationData
+	mallId: String
+	phone: String
+	phone2: String
+	website: String
+	email: String
+	instagram: String
+	facebook: String
+	twitter: String
+	youtube: String
+	contactName: String
+	openDays: [String]
+}
+
 type Mutation {
 	# deletes a shop 
 	# shopId the unique id of the shop 
@@ -71,47 +92,10 @@ type Mutation {
 	# title is the shopId title
 	# description is the shop content
 	# image is the main image for he shop
-	createShop(
-		title: String!, 
-		description: String!
-		categories: [String!]
-		image: String
-		latitude: String
-		longitude: String
-		location: LocationData
-		mallId: String
-		phone: String
-		phone2: String
-		website: String
-		email: String
-		instagram: String
-		facebook: String
-		twitter: String
-		youtube: String
-		contactName: String
-		openDays: [String]
-	): Shop
-	saveShop(
-		_id: ID!
-		title: String!
-		description: String!
-		categories: [String!]
-		image: String
-		latitude: String
-		longitude: String
-		location: LocationData
-		mallId: String
-		phone: String
-		phone2: String
-		website: String
-		email: String
-		instagram: String
-		facebook: String
-		twitter: String
-		youtube: String
-		contactName: String
-		openDays: [String]
-	): Shop
+	createShop( params: ShopParams ): Shop
+
+	# creates a new shop 
+	saveShop( _id: ID!, params: ShopParams ): Shop
 }
 
 `];
@@ -163,7 +147,7 @@ export const ShopResolvers = {
   		}
   	},
 	Mutation: {
-		async createShop(root, args, context) {
+		async createShop(root, { params }, context) {
 			if (!context.user) {
 				throw new FooError({ data: { authentication: 'you must sign in first' } });
 			}
@@ -171,7 +155,7 @@ export const ShopResolvers = {
 			//	check by a regex on title AND a query for lat/lng (maybe within X miles)
 			let shop;
 			try {
-				shop = await buildShop(args, context.user);
+				shop = await buildShop(params, context.user);
 				let docId = Shops.insert(shop);
 				if (docId) { return Shops.findOne({_id: docId}); }
 			}
@@ -181,29 +165,43 @@ export const ShopResolvers = {
 			}
 
 		},
-		async saveShop(root, args, context) {
+		async saveShop(root, { params, _id }, context) {
 			if (!context.user) {
+				// if the user is not signed in, throw an error
 				throw new FooError({ data: { authentication: 'you must sign in first' } });
 			}
-			let shop = Shops.findOne({_id: args._id});
+
+			let shop = Shops.findOne({ _id });
+
 			if (!shop) {
+				// if the shop does not exist, throw an error
 				throw new FooError({ data: { authentication: 'shop does not exist!' } });
 			}
 			if ((context.user._id !== shop.ownerId) && !context.user.roles.includes('admin')) {
+				// if user is not the owner or an admin, they can not edit the shop's information
 				throw new FooError({ data: { authentication: 'you must be the owner or an admin to delete this record!' } });
 			}
+
 			// TODO: check if record already exists
 			//	check by a regex on title AND a query for lat/lng (maybe within X miles)
 			//let shop = await buildShop(args, context.user)
-			let docToUpdate = { _id: args._id }
 			let dataToUpdate = {
-				title: args.title,
-				descrption: args.description,
-				categories: args.categories,
-				image: args.image,
-				mallId: args.mallId
+				title: params.title,
+				descrption: params.description,
+				categories: params.categories,
+				image: params.image,
+				mallId: params.mallId
+				phone: params.phone
+				phone2: params.phone2
+				website: params.website
+				email: params.email
+				instagram: params.instagram
+				facebook: params.facebook
+				twitter: params.twitter
+				youtube: params.youtube
 			}
-			Shops.update(docToUpdate, { $set: dataToUpdate });
+
+			Shops.update({ _id }, { $set: dataToUpdate });
 			return shop;
 
 		},
