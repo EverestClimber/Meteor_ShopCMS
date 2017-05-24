@@ -4,19 +4,14 @@ import { check } from 'meteor/check';
 import { Shops } from './model';
 import { Attachments } from '../Attachment/model';
 import { Malls } from '../Mall/model';
-
-import { createError } from 'apollo-errors';
+//import { createResolver } from 'apollo-resolvers';
+import { createError, isInstance } from 'apollo-errors';
 import { buildShop, getShopSearchResults } from '../api-helpers';
-
-
-const FooError = createError('FooError', {
-  message: 'A foo error has occurred'
-});
+import { isAuthenticatedResolver, isManagerResolver, isAdminResolver, isOwnerOrAdminResolver } from '../base-resolvers';
 
 
 
 export const ShopSchema = [`
-
 
 type Shop {
 	    _id: ID!
@@ -62,6 +57,27 @@ type Query {
     	): [Shop],
 	  }
 
+input ShopParams {
+	title: String!, 
+	description: String!
+	categories: [String!]
+	image: String
+	latitude: String
+	longitude: String
+	location: LocationData
+	mallId: String
+	phone: String
+	phone2: String
+	website: String
+	email: String
+	instagram: String
+	facebook: String
+	twitter: String
+	youtube: String
+	contactName: String
+	openDays: [String]
+}
+
 type Mutation {
 	# deletes a shop 
 	# shopId the unique id of the shop 
@@ -71,51 +87,71 @@ type Mutation {
 	# title is the shopId title
 	# description is the shop content
 	# image is the main image for he shop
-	createShop(
-		title: String!, 
-		description: String!
-		categories: [String!]
-		image: String
-		latitude: String
-		longitude: String
-		location: LocationData
-		mallId: String
-		phone: String
-		phone2: String
-		website: String
-		email: String
-		instagram: String
-		facebook: String
-		twitter: String
-		youtube: String
-		contactName: String
-		openDays: [String]
-	): Shop
-	saveShop(
-		_id: ID!
-		title: String!
-		description: String!
-		categories: [String!]
-		image: String
-		latitude: String
-		longitude: String
-		location: LocationData
-		mallId: String
-		phone: String
-		phone2: String
-		website: String
-		email: String
-		instagram: String
-		facebook: String
-		twitter: String
-		youtube: String
-		contactName: String
-		openDays: [String]
-	): Shop
+	createShop( params: ShopParams ): Shop
+
+	# creates a new shop 
+	saveShop( _id: ID!, params: ShopParams ): Shop
 }
 
 `];
 
+
+
+
+const deleteShop = isOwnerOrAdminResolver.createResolver(
+	async (root, { shopId }, context) => {
+		// TODO: check if record already exists
+		//	check by a regex on title AND a query for lat/lng (maybe within X miles)
+		Shops.remove({_id: shopId}, (err, response) => {
+			return shopId;
+		});
+	}
+);
+
+const createShop = isAuthenticatedResolver.createResolver(
+	async (root, { params }, context) => {
+		// TODO: check if record already exists
+		//	check by a regex on title AND a query for lat/lng (maybe within X miles)
+		let shop;
+		try {
+			shop = await buildShop(params, context.user);
+			let docId = Shops.insert(shop);
+			if (docId) { return Shops.findOne({_id: docId}); }
+		}
+		catch(e) {
+			return console.log(e);
+		}
+	}
+);
+
+const saveShop = isOwnerOrAdminResolver.createResolver(
+	async (root, { params, _id }, context) => {
+
+		// TODO: check if record already exists
+		//	check by a regex on title AND a query for lat/lng (maybe within X miles)
+		//let shop = await buildShop(args, context.user)
+		let dataToUpdate = {
+			title: params.title,
+			descrption: params.description,
+			categories: params.categories,
+			image: params.image,
+			mallId: params.mallId,
+			phone: params.phone,
+			phone2: params.phone2,
+			website: params.website,
+			email: params.email,
+			instagram: params.instagram,
+			facebook: params.facebook,
+			twitter: params.twitter,
+			youtube: params.youtube,
+		}
+		Shops.update({ _id }, { $set: dataToUpdate }, (err) => {
+			if (err) { return console.log(err); }
+		});
+		let shop = Shops.findOne({ _id });
+		return shop;
+	}
+);
 
 export const ShopResolvers = {
 	Query: {
@@ -163,70 +199,9 @@ export const ShopResolvers = {
   		}
   	},
 	Mutation: {
-		async createShop(root, args, context) {
-			if (!context.user) {
-				throw new FooError({ data: { authentication: 'you must sign in first' } });
-			}
-			// TODO: check if record already exists
-			//	check by a regex on title AND a query for lat/lng (maybe within X miles)
-			let shop;
-			try {
-				shop = await buildShop(args, context.user);
-				let docId = Shops.insert(shop);
-				if (docId) { return Shops.findOne({_id: docId}); }
-			}
-			catch(e) {
-				console.log(e);
-				throw new FooError({ data: { message: e } });
-			}
-
-		},
-		async saveShop(root, args, context) {
-			if (!context.user) {
-				throw new FooError({ data: { authentication: 'you must sign in first' } });
-			}
-			let shop = Shops.findOne({_id: args._id});
-			if (!shop) {
-				throw new FooError({ data: { authentication: 'shop does not exist!' } });
-			}
-			if ((context.user._id !== shop.ownerId) && !context.user.roles.includes('admin')) {
-				throw new FooError({ data: { authentication: 'you must be the owner or an admin to delete this record!' } });
-			}
-			// TODO: check if record already exists
-			//	check by a regex on title AND a query for lat/lng (maybe within X miles)
-			//let shop = await buildShop(args, context.user)
-			let docToUpdate = { _id: args._id }
-			let dataToUpdate = {
-				title: args.title,
-				descrption: args.description,
-				categories: args.categories,
-				image: args.image,
-				mallId: args.mallId
-			}
-			Shops.update(docToUpdate, { $set: dataToUpdate });
-			return shop;
-
-		},
-		async deleteShop(root, { shopId }, context) {
-			if (!context.user) {
-				throw new FooError({ data: { authentication: 'you must sign in first' } });
-			}
-
-			let shop = Shops.findOne({_id: shopId});
-
-			if (!shop) {
-				throw new FooError({ data: { authentication: 'shop does not exist!' } });
-			}
-			if ((context.user._id !== shop.ownerId) && !context.user.roles.includes('admin')) {
-				throw new FooError({ data: { authentication: 'you must be the owner or an admin to delete this record!' } });
-			}
-			// TODO: check if record already exists
-			//	check by a regex on title AND a query for lat/lng (maybe within X miles)
-			Shops.remove({_id: shopId}, (err, response) => {
-				return shopId;
-			});
-
-		},
+		createShop,
+		saveShop,
+		deleteShop,
 	}
 };
 

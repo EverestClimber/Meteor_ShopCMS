@@ -70,27 +70,10 @@ export const ADD_ATTACHMENTS = gql`
 	}
 `
 
+
 export const CREATE_SHOP = gql`
-	mutation CreateShop(
-	  $title: String!
-	  $description: String!
-	  $categories: [String!]
-	  $image: String
-	  $longitude:String
-	  $latitude: String
-	  $mallId: String
-	  $location: LocationData
-	){
-	  createShop(
-	    title: $title
-	    mallId: $mallId
-	    description: $description
-	    categories: $categories
-	    image: $image
-	    longitude: $longitude
-	    latitude: $latitude
-	    location: $location
-	  ){
+	mutation CreateShop( $params: ShopParams ){
+	  createShop( params: $params ){
 	    _id
 	    owner {
 	    	_id
@@ -98,30 +81,15 @@ export const CREATE_SHOP = gql`
 	  }
 	}
 `
-
 export const SAVE_SHOP = gql`
-	mutation SaveShop(
-		$_id: ID!
-	  	$title: String!
-	  	$description: String!
-	  	$categories: [String!]
-	  	$image: String
-	  	$longitude:String
-	  	$latitude: String
-	  	$mallId: String
-	  	$location: LocationData
+	mutation SaveShop( 
+		$_id: ID!, 
+		$params: ShopParams 
 	){
-	  saveShop(
-	  	_id: $_id
-	    title: $title
-	    mallId: $mallId
-	    description: $description
-	    categories: $categories
-	    image: $image
-	    longitude: $longitude
-	    latitude: $latitude
-	    location: $location
-	  ){
+	  saveShop( 
+	  	_id: $_id, 
+	  	params: $params 
+	 ){
 	    _id
 	    owner {
 	    	_id

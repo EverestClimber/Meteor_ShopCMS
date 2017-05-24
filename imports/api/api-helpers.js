@@ -132,16 +132,16 @@ export const getLocationFromAddress = (locationArgs) => {
 }
 
 
-export const buildShop = async (args, user) => {
+export const buildShop = async (params, user) => {
 
 	let location;
 
-	if (args.latitude && args.longitude) {
-		location = await getLocationFromCoords(args.latitude, args.longitude);
+	if (params.latitude && params.longitude) {
+		location = await getLocationFromCoords(params.latitude, params.longitude);
 	}
 
-	if (!args.latitude && !args.longitude && args.location) {
-		location = await getLocationFromAddress(args.location);
+	if (!params.latitude && !params.longitude && params.location) {
+		location = await getLocationFromAddress(params.location);
 	}
 
 
@@ -153,17 +153,25 @@ export const buildShop = async (args, user) => {
 				reject('could not find this location')
 			}
 	    	let shop = {
-	    		title: args.title || null,
-	    		description: args.description || null,
-	    		categories: args.categories || [],
+	    		title: params.title || null,
+	    		description: params.description || null,
+	    		categories: params.categories || [],
 				ownerId: user._id,
-				phone: args.phone || null,
-				website: args.website || null,
-				email: args.email || null,
-				mallId: args.mallId || null,
+				phone: params.phone || null,
+				website: params.website || null,
+				email: params.email || null,
+				mallId: params.mallId || null,
 				//ownerName: `${user.profile.firstName} ${user.profile.lastName}` || null,
-				image: args.image || null,
-				location
+				image: params.image || null,
+				location,
+				phone: params.phone,
+				phone2: params.phone2,
+				website: params.website,
+				email: params.email,
+				instagram: params.instagram,
+				facebook: params.facebook,
+				twitter: params.twitter,
+				youtube: params.youtube,
 			}
 	    	resolve(shop)
 	    }

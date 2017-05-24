@@ -98,10 +98,10 @@ class AdminShopsPage extends React.Component {
 		form.validateFields((err, { title, description, mallId, categories, street1, street2, country, state, postal, suburb  }) => {
 			if (err) { return this.setState({loadingSubmit: false}); }
 			if (!image) { return this.setState({loadingSubmit: false, errors: ['please add a main image!']}); }
-			let variables = { 
+			let params = { 
 				title, description, categories, image, mallId, location: { street1, street2, country, state, postal, suburb } 
 			};
-			this.props.createShop({ variables })
+			this.props.createShop({ variables: { params } })
 				.then( res => this.onSuccessfulSubmit(res, imageList, form) )
 				.catch(e => this.onError(e) );
 
