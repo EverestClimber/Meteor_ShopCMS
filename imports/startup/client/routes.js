@@ -23,14 +23,13 @@ import AdminShopsPage from '../../ui/pages/admin/admin-shops';
 import AdminAddShopPage from '../../ui/pages/admin/admin-add-shop';
 import AdminMalls from '../../ui/pages/admin/admin-malls';
 import AdminShopSinglePage from '../../ui/pages/admin/admin-shop-single';
+import AdminMallSinglePage from '../../ui/pages/admin/admin-mall-single';
 import ResetPassword from '../../ui/pages/public/ResetPassword';
 import ForgotPassword from '../../ui/pages/public/ForgotPassword';
 
 // THEME
 import enUS from 'antd/lib/locale-provider/en_US';
 import LocaleProvider from 'antd/lib/locale-provider'
-
-
 
 // Hook where will be fetched the data before displaying the component
 // Will redirect user if not logged
@@ -53,8 +52,11 @@ const AppRoutes = () => {
       {/*ADMIN AREA*/}
       <Route path="/admin" breadcrumbName='Admin' component={ AdminLayout }>
         <IndexRoute name="index" component={ AdminHomePage } />
-        <Route path="/admin/account" breadcrumbName='Account' component={ AdminAccountPage }  />
-        <Route path="/admin/malls" breadcrumbName='Malls' component={ AdminMalls }  />
+        <Route path="account" breadcrumbName='Account' component={ AdminAccountPage }  />
+        
+        <Route path="malls" breadcrumbName='Malls' component={ AdminMalls }>
+          <Route path=":_id" breadcrumbName='Mall Detail' component={ AdminMallSinglePage } />
+        </Route>
 
         <Route path="shops" breadcrumbName='Shops' component={ AdminShopsPage }>
           <Route path=":_id" breadcrumbName='Shop Detail' component={ AdminShopSinglePage } />

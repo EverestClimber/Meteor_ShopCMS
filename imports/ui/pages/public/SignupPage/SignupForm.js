@@ -33,11 +33,15 @@ class FormComponent extends React.Component {
       _this.setState({ loading: true, errors: [] });
 	    _this.props.form.validateFields((err, { firstName, lastName, email, password, cell }) => {
         if (err) { return _this.setState({ loading: false }) }
+        //console.log({ firstName, lastName, email, password, cell });
         let profile = { 
           cell, 
-          //name: { first: firstName, last: lastName } 
+          firstName, 
+          lastName
         }
-        handleSignup(email, password, profile, ApolloClient, _this)
+        roles = ["manager"];
+        //console.log(profile);
+        handleSignup(email, password, profile, roles, ApolloClient, _this)
 	    });
 
 	  }

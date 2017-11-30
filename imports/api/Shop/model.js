@@ -123,7 +123,7 @@ Shops.schema = new SimpleSchema({
     type: String,
     optional: true,
   },
-  contactName: {
+  ownerId: {
     type: String,
     optional: true,
   },

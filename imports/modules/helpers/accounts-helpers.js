@@ -8,12 +8,13 @@ import { loginWithPassword, createUser, logout, onTokenChange } from 'meteor-apo
 const afterLogin = (userId, apollo, _this) => {
   message.success('welcome!'); 
   apollo.resetStore();
-  return _this.setState({ loading: false });
-/*  if (Roles.userIsInRole(userId, ['admin'])) {
+  //return _this.setState({ loading: false });
+   //console.log("hahaha mang");
+  if (Roles.userIsInRole(userId, ['admin'])) {
       return browserHistory.push('/admin');
   } else {
       return browserHistory.push('/');
-  }*/
+  }
 }
 
 const alertErrors = (res, _this) => {
@@ -28,11 +29,16 @@ const alertErrors = (res, _this) => {
 }
 
 
-export const handleSignup = (email, password, profile, apollo, _this) => {
-  console.log(profile)
-  createUser({email, password, profile}, apollo)
-    .then(userId => afterLogin(userId, apollo, _this) )
-    .catch( res => alertErrors(res, _this) );
+export const handleSignup = (email, password, profile, roles, apollo, _this) => {
+  //console.log(profile)
+  //let roles = ["manager"];
+  
+  createUser({email, password, profile, roles}, apollo)
+    .then(userId => {  
+      Roles.setUserRoles(userId, ['manager']); 
+      afterLogin(userId, apollo, _this)
+    })
+    .catch( res => { console.log(res); alertErrors(res, _this)} );
 };
 
 
@@ -42,7 +48,6 @@ export const handleLogin = (email, password, apollo, _this) => {
     .catch( res => alertErrors(res, _this) );
   //onTokenChange(({ userId, token }) => Meteor.loginWithToken(token, () => afterLogin(userId, props)));
 };
-
 
 export const handleLogout = (apollo, _this) => {
       logout(apollo)

@@ -27,6 +27,7 @@ const itemRender = (route, params, routes, paths) => {
 // EXPORTED COMPONENT
 // ====================================
 export const MainContent = ({routes, params, children, collapsed, toggle }) => {
+  //console.log(routes);
   return (
     <Layout>
       <Header style={{ background: '#fff', padding: 0 }}>

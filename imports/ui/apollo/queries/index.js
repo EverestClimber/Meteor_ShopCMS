@@ -2,13 +2,13 @@ import gql from 'graphql-tag';
 
 const shopFragment = gql`
   fragment shopFragment on Shop {
-        _id
-        title
-        description
-        categories
-        image
-        mallId
-        attachments {
+		_id
+		title
+		description
+		categories
+		image
+		mallId
+		attachments {
 			_id
 			url
 		}
@@ -23,13 +23,12 @@ const shopFragment = gql`
 				image
 			}
 		}
-        location {
-          lat
-          lng
-        }
-    }
+		location {
+			lat
+			lng
+		}
+	}
 `;
-
 
 
 export const GET_USER = gql`
@@ -38,7 +37,10 @@ export const GET_USER = gql`
 			_id
 			emails { address, verified }
 			roles
-			profile { firstName, lastName }
+			profile { 
+				firstName
+				lastName
+			}
 		}
 	}
 `;
@@ -70,7 +72,7 @@ export const FETCH_SHOPS = gql`
 				lat
 				lng
 			}
-		} 
+		}
 	}
 `;
 
@@ -86,9 +88,28 @@ export const FETCH_MALLS = gql`
 				lat
 				lng
 			}
+			openDays
 		} 
 	}
 `;
+
+
+export const FETCH_MALL = gql`
+	query FetchMall($_id: ID!) {
+		mallById(_id: $_id) {
+			_id
+			title
+			description
+			location {
+				lat
+				lng
+			}
+			openDays
+			shopIds 
+		} 
+	}
+`;
+
 
 export const GET_USER_DATA = gql`
   query getCurrentUser {

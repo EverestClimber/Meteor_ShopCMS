@@ -125,8 +125,6 @@ class PicturesWallContainer extends React.Component {
   }
 }
 
-
-
 class MultipleImageUpload extends React.Component {
 	constructor(props){
 		super(props);

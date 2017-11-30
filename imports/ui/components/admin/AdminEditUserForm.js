@@ -52,7 +52,7 @@ class AdminEditUserForm extends React.Component {
 
     form.validateFields((err, { email, roles, firstName, lastName }) => {
       if (err) { failure(); }
-        mutate({ variables: { email, _id: user._id, roles, firstName, lastName  } })
+        mutate({ variables: { email, _id: user._id, roles } })
           .then(() => success());
     });
 

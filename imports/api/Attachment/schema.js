@@ -43,7 +43,6 @@ type Mutation {
 `];
 
 
-
 export const AttachmentResolvers = {
 	Query: {
 	    attachmentById: (root, args, context) => Attachments.findOne({ _id: args._id }),
@@ -63,9 +62,9 @@ export const AttachmentResolvers = {
   	},
 	Mutation: {
 		addAttachments(root, args, context) {
-			if (!context.user) {
-				throw new FooError({ data: { authentication: 'you must sign in first' } });
-			}
+			// if (!context.user) {
+			// 	throw new FooError({ data: { authentication: 'you must sign in first' } });
+			// }
 
 			let imagesToInsert = args.images.map( item => {
 				let image = {

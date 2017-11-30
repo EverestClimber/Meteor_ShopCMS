@@ -9,8 +9,6 @@ import { createError, isInstance } from 'apollo-errors';
 import { buildShop, getShopSearchResults } from '../api-helpers';
 import { isAuthenticatedResolver, isManagerResolver, isAdminResolver, isOwnerOrAdminResolver } from '../base-resolvers';
 
-
-
 export const ShopSchema = [`
 
 type Shop {
@@ -23,7 +21,7 @@ type Shop {
 	  	phone2: String
 	  	website: String
 	  	email: String
-	  	contactName: String
+	  	owner: User,
 	  	instagram: String
 	  	facebook: String
 	  	twitter: String
@@ -31,7 +29,7 @@ type Shop {
 	  	mallId: String
 	  	openDays: [String]
 	    location: Address
-	    owner: User
+	    ownerId: String
 	    mall: Mall
 	    attachments: [Attachment]
 	}
@@ -74,7 +72,7 @@ input ShopParams {
 	facebook: String
 	twitter: String
 	youtube: String
-	contactName: String
+	ownerId: String
 	openDays: [String]
 }
 
@@ -95,15 +93,12 @@ type Mutation {
 
 `];
 
-
-
-
 const deleteShop = isOwnerOrAdminResolver.createResolver(
 	async (root, { shopId }, context) => {
 		// TODO: check if record already exists
 		//	check by a regex on title AND a query for lat/lng (maybe within X miles)
 		Shops.remove({_id: shopId}, (err, response) => {
-			return shopId;
+			return _id;
 		});
 	}
 );
@@ -115,6 +110,8 @@ const createShop = isAuthenticatedResolver.createResolver(
 		let shop;
 		try {
 			shop = await buildShop(params, context.user);
+			//shop.ownerId = this.userId
+			console.log( shop );
 			let docId = Shops.insert(shop);
 			if (docId) { return Shops.findOne({_id: docId}); }
 		}
@@ -144,6 +141,7 @@ const saveShop = isOwnerOrAdminResolver.createResolver(
 			facebook: params.facebook,
 			twitter: params.twitter,
 			youtube: params.youtube,
+			ownerId: params.ownerId
 		}
 		Shops.update({ _id }, { $set: dataToUpdate }, (err) => {
 			if (err) { return console.log(err); }

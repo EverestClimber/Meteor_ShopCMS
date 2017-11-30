@@ -10,13 +10,16 @@ import Tabs from 'antd/lib/tabs';
 import Row from 'antd/lib/row';
 // APOLLO
 import { graphql } from 'react-apollo';
-import { FETCH_SHOP } from '../../apollo/queries';
-import { DELETE_SHOP } from '../../apollo/mutations';
+//import { FETCH_SHOP } from '../../apollo/queries';
+//import { DELETE_SHOP } from '../../apollo/mutations';
+import { FETCH_MALL } from '../../apollo/queries';
+import { DELETE_MALL } from '../../apollo/mutations';
+
 import apollo from '../../apollo/ApolloClient';
 // MODULES
 import { getCategoryTag } from '/imports/modules/helpers'
 //COMPONENTS
-import EditShopForm from '/imports/ui/components/common/EditShopForm'
+import EditMallForm from '/imports/ui/components/common/EditMallForm'
 
 
 // CONSTANTS & DESTRUCTURING
@@ -30,13 +33,13 @@ const styles = {
 }
 
 
-class ShopSingle extends React.Component {
+class MallSingle extends React.Component {
   onDelete = () => {
-    const { shopById, loading } = this.props.data;
+    const { mallById, loading } = this.props.data;
 
-      this.props.mutate({ variables: { shopId: shopById._id } })
+      this.props.mutate({ variables: { mallId: mallById._id } })
         .then(() => {
-          return browserHistory.push('/admin/shops');
+          return browserHistory.push('/admin/malls');
         })
         .catch(e => {
           const errors = e.graphQLErrors.map( err => err.message );
@@ -46,29 +49,29 @@ class ShopSingle extends React.Component {
   }
   render() {
 
-    const { shopById, loading } = this.props.data;
+    const { mallById, loading } = this.props.data;
 
     if (loading) { return <Spin /> } //show spinner while data is loading
-    console.log("admin-shop-single");
+    console.log(mallById);
     return (
       <div style={{width: 400, margin: '20px auto', maxWidth: '90%'}}>
-        <Popconfirm onConfirm={this.onDelete} title="Are you sure delete this shop?" okText="Yes" cancelText="No">
+        <Popconfirm onConfirm={this.onDelete} title="Are you sure delete this mall?" okText="Yes" cancelText="No">
           <Button type="primary">Delete</Button>
         </Popconfirm>
         <Card title='General Info:' style={{marginTop: 10}}>
-          <h2>{shopById.title || ''}</h2>
-          <p>{shopById.description || ''}</p>
-          <h3>categories:</h3>
-          {shopById.categories && shopById.categories.length > 0 
-            && shopById.categories.map(item => <Tag color="green" key={item}>{getCategoryTag(item)}</Tag>)
+          <h2>{mallById.title || ''}</h2>
+          <p>{mallById.description || ''}</p>
+          <h3>open days:</h3>
+          {mallById.openDays && mallById.openDays.length > 0 
+            && mallById.openDays.map(item => <Tag color="green" key={item}>{item}</Tag>)
           }
         </Card>
-
+        
         <Card title='Created By:' style={{marginTop: 10}}>
-          <h2>{shopById.owner && shopById.owner._id || ''}</h2>
-          <h2>{shopById.owner && shopById.owner.emails[0].address || ''}</h2>
-          <h2>{shopById.owner && shopById.owner.profile.name.first || ''}</h2>
-          <h2>{shopById.owner && shopById.owner.profile.name.last || ''}</h2>
+          <h2>{mallById.owner && mallById.owner._id || ''}</h2>
+          <h2>{mallById.owner && mallById.owner.emails[0].address || ''}</h2>
+          <h2>{mallById.owner && mallById.owner.profile.name.first || ''}</h2>
+          <h2>{mallById.owner && mallById.owner.profile.name.last || ''}</h2>
         </Card>
       </div>
     );
@@ -77,25 +80,25 @@ class ShopSingle extends React.Component {
 
 // EXPORTED COMPONENT
 // ===================================
-class AdminShopSinglePage extends React.Component {
+class AdminMallSinglePage extends React.Component {
   
   render() {
     const { data } = this.props;
 
     if (data.loading) { return <Spin /> }
-
+    //console.log("admin-mall-single");
     return (
       <div>
         <Row gutter={10} type="flex" justify="center" align="middle" style={styles.rowContainer}>
           <Tabs defaultActiveKey="1">
-            <TabPane tab="Shop" key="1">
+            <TabPane tab="Mall" key="1">
               <div style={styles.rowContainer}>
-                <ShopSingle {...this.props}/>
+                <MallSingle {...this.props}/>
               </div>
             </TabPane>
-            <TabPane tab="Edit Shop" key="2">
+            <TabPane tab="Edit Mall" key="2">
               <div style={styles.rowContainer}>
-                <EditShopForm shop={data.shopById} />
+                <EditMallForm mall={data.mallById} />
               </div>
             </TabPane>
           </Tabs>
@@ -108,11 +111,8 @@ class AdminShopSinglePage extends React.Component {
 // ===================================
 
 
-
-
-
-export default graphql(FETCH_SHOP, {
-  options: (props) => { return { variables: { _id: props.params._id } } }
+export default graphql(FETCH_MALL, {
+  options: (props) => { return { variables: { _id: props.params._id  } } }
 })(
-  graphql(DELETE_SHOP)(AdminShopSinglePage)
+  graphql(DELETE_MALL)(AdminMallSinglePage)
 );

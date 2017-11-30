@@ -108,7 +108,7 @@ class AdminShopsPage extends React.Component {
 		});
 	}
 	saveFormRef = (form) => {
-	this.form = form;
+		this.form = form;
 	}
 	renderContent() {
 
@@ -116,7 +116,7 @@ class AdminShopsPage extends React.Component {
 
 		return (
 			<div>
-				{/*<Button type="primary" onClick={this.showModal}>+ Add Shop</Button>
+				<Button type="primary" onClick={this.showModal}>+ Add Shop</Button>
 				<AddShopForm
 					ref={this.saveFormRef}
 					visible={this.state.visible}
@@ -125,7 +125,7 @@ class AdminShopsPage extends React.Component {
 					errors={this.state.errors}
 					loadingSubmit={this.state.loadingSubmit}
 					{...this.props}
-				/>*/}
+				/>
 				<Row>
 					<AdminShopsTable shops={shops} />
 				</Row>
@@ -134,7 +134,7 @@ class AdminShopsPage extends React.Component {
 	}
 	render(){
 		const { children, data } = this.props;
-
+		console.log("children", children);
 		if (data.loading) { return <div>Loading...</div>; }
 
 		return (

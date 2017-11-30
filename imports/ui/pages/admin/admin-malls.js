@@ -22,7 +22,9 @@ const columns = [
 	  title: '_id',
 	  dataIndex: '_id',
 	  key: '_id',
-	  //render: _id => <Link to={`/admin/users/${_id}`}>{_id}</Link>,
+	  render: _id => <Link to={`/admin/malls/${_id}`}>{_id}</Link>,
+	  
+	  //render: _id => <Link to={`/admin/malls/a6hmKPP2FzETkQige`}>{_id}</Link>,
 	},
 	{
 	  title: 'title',
@@ -67,9 +69,13 @@ class AdminMalls extends React.Component {
 	handleCreate = () => {
 		const form = this.form;
 		this.setState({loadingSubmit: true})
-		form.validateFields((err, { title, description, street1, street2, country, state, postal, suburb, shopIds  }) => {
+		
+		////////////////------------openDays missing ---------------------------------------
+
+		form.validateFields((err, { title, description, lat, lng , shopIds, openDays  }) => {
 			if (err) { return this.setState({loadingSubmit: false}); }
-			let variables = { title, description, street1, street2, country, state, postal, suburb, shopIds };
+			let variables = { title, description, lat, lng, shopIds, openDays };
+			//console.log(variables);
 			this.props.mutate({ variables })
 				.then(() => {
 					this.props.data.refetch()
@@ -86,13 +92,12 @@ class AdminMalls extends React.Component {
 		});
 	}
 	saveFormRef = (form) => {
-	this.form = form;
+		this.form = form;
 	}
 
-	render(){
+	renderContent() {
+		
 		const { loading, malls } = this.props.data;
-
-		if (loading) { return <div>Loading...</div>; }
 
 		return (
 			<div>
@@ -102,12 +107,24 @@ class AdminMalls extends React.Component {
 					visible={this.state.visible}
 					onCancel={this.handleCancel}
 					onCreate={this.handleCreate}
+					errors={this.state.errors}
 					loadingSubmit={this.state.loadingSubmit}
 					{...this.props}
 				/>
 				<Row>
 					<AdminMallsTable malls={malls} />
 				</Row>
+			</div>
+		);
+	}
+	render(){
+		const { children, data } = this.props;
+		//console.log("children", children);
+		if (data.loading) { return <div>Loading...</div>; }
+
+		return (
+			<div>
+				{children ? children : this.renderContent()}
 			</div>
 		);
 	}

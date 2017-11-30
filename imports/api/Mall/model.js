@@ -30,6 +30,10 @@ Malls.schema = new SimpleSchema({
     type: String,
     optional: true,
   },
+  openDays: {
+    type: [String],
+    optional: true
+  },
   location: {
     type: addressSchema,
     optional: true

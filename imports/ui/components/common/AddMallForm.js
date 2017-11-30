@@ -18,7 +18,7 @@ import { FETCH_SHOPS } from '/imports/ui/apollo/queries'
 //import { getWatchgroupOptions, PRIORITY_LEVEL, REPORT_TYPE } from '../../../modules/helpers'
 import { SingleImageUpload } from './SingleImageUpload'
 import Geosuggest from 'react-geosuggest';
-import { CATEGORY_OPTIONS, selectFilterByLabel } from '/imports/modules/helpers'
+import { DAYS_OPTIONS, CATEGORY_OPTIONS, selectFilterByLabel } from '/imports/modules/helpers'
 import { MultipleImageUpload } from './MultipleImageUpload'
 import CountryInput from './CountryInput'
 import StateInput from './StateInput'
@@ -63,37 +63,38 @@ class AddMall extends React.Component {
           </FormItem>
           <h3>Location</h3>
           <Row gutter={15}>
-             <Col xs={12}>
-              <FormItem label="street1">
-                {getFieldDecorator('street1')(<Input placeholder="street 1...." />)}
+            <Col xs={12}>
+              <FormItem label="lat">
+                {getFieldDecorator('lat')(<Input placeholder="lat...." />)}
               </FormItem>
             </Col>
+            
             <Col xs={12}>
-              <FormItem label="street2">
-                {getFieldDecorator('street2')(<Input placeholder="street2...." />)}
+              <FormItem label="lng">
+                {getFieldDecorator('lng')(<Input placeholder="lng...." />)}
               </FormItem>
-            </Col>
-            <Col xs={12}>
-              <FormItem label="suburb">
-                {getFieldDecorator('suburb')(<Input placeholder="suburb...." />)}
-              </FormItem>
-            </Col>
-            <Col xs={12}>
-              <StateInput getFieldDecorator={getFieldDecorator} />
-            </Col>
-            <Col xs={12}>
-              <FormItem label="postal code">
-                {getFieldDecorator('postal')(<Input placeholder="postal code...." />)}
-              </FormItem>
-            </Col>
-            <Col xs={12}>
-              <CountryInput getFieldDecorator={getFieldDecorator} />
             </Col>
           </Row>
-          {/*!this.props.data.loading && this.props.data.shops && (
+          <FormItem label="open days">
+            {getFieldDecorator('openDays', {
+              rules: [{ required: true, message: 'Please input your open days!' }],
+            })(
+              <Select 
+                  mode='multiple' 
+                  optionFilterProp="children" 
+                  filterOption={selectFilterByLabel}
+                  showSearch 
+                  style={{ width: '100%' }} 
+                  placeholder="Please select open days"
+              >
+                {DAYS_OPTIONS.map( item => <Option key={item.value} value={item.value}> {item.label} </Option>)}
+              </Select>
+            )}
+          </FormItem>
+          {!this.props.data.loading && this.props.data.shops && (
               <FormItem label="Shops">
               {getFieldDecorator('shopIds', {
-                rules: [{ required: true, message: 'Please input your mall!' }],
+                rules: [{ required: true, message: 'Please select shops related to this mall!' }],
               })(
                 <Select 
                   showSearch 
@@ -107,7 +108,7 @@ class AddMall extends React.Component {
                 </Select>
               )}
             </FormItem>
-          )*/}
+          )}
         </Form>
       </Modal>
     );

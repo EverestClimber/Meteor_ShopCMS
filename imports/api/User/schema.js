@@ -10,19 +10,21 @@ type Email {
   verified: Boolean
 }
 
-type Name {
-  first: String
-  last: String
-}
-
-
-type Profile {
-  name: Name
+input CreateUserProfileInput {
   firstName: String
   lastName: String
   cell: String
   image: String
   expoPushId: String
+}
+
+type Profile {
+  firstName: String
+  lastName: String
+  cell: String
+  image: String
+  expoPushId: String
+  
 }
 
 type User {

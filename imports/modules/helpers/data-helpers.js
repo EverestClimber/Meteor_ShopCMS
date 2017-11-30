@@ -103,7 +103,6 @@ export const CATEGORY_OPTIONS = [
 ];
 
 export const DAYS_OPTIONS = [
-  { label: 'Sunday', value: 'Sunday'},
   { label: 'Monday', value: 'Monday'},
   { label: 'Tuesday', value: 'Tuesday'},
   { label: 'Wednesday', value: 'Wednesday'},
