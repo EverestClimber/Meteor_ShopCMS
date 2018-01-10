@@ -1,4 +1,4 @@
-# TrueLife Webapp Admin (Meteor + Apollo + React + Antd)
+# Webapp Admin (Meteor + Apollo + React + Antd)
 
 A simple webapp admin panel MVP built with Apollo, Meteor and React.
 
